@@ -1,9 +1,5 @@
 package main
 
-import (
-	"image"
-)
-
 type CascadeIntervalResult struct {
 	color      Color
 	visibility float64 // 1.0 if the interval hit nothing, and 0.0 it it did.
@@ -67,9 +63,9 @@ func BiLinear(ratio Vec2, s0, s1, s2, s3 CascadeIntervalResult) CascadeIntervalR
 	}
 }
 
-func RenderCascade(scene *Scene) *image.RGBA {
+func RenderCascade(scene *Scene) *SampledImage {
 	const WIDTH, HEIGHT = 800, 800
-	img := image.NewRGBA(image.Rect(0, 0, WIDTH, HEIGHT))
+	s := NewSampledImage(WIDTH, HEIGHT)
 	cc := NewCascadeCalculator(WIDTH, HEIGHT)
 	cascadeResult := make([]*CascadeResult, cc.NCascades)
 
@@ -152,9 +148,8 @@ func RenderCascade(scene *Scene) *image.RGBA {
 			}
 			col.Mul(1.0 / float64(c0.dirCount)) // average the colors
 			//col.Mul(2. * math.Pi)
-			img.Set(x, y, col.ToSRGBA())
+			s.SetColor(x, y, col)
 		}
 	}
-
-	return img
+	return s
 }

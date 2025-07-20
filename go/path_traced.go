@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"image"
 	"math"
 	"math/rand/v2"
 )
@@ -24,11 +23,10 @@ func RenderPixel(s *Scene, uv Vec2, samples int) Color {
 	return col
 }
 
-func RenderPathTracing(scene *Scene) *image.RGBA {
+func RenderPathTracing(scene *Scene) *SampledImage {
 	const WIDTH, HEIGHT = 800, 800
 	const SAMPLES = 100
-	img := image.NewRGBA(image.Rect(0, 0, WIDTH, HEIGHT))
-	energy := 0.
+	s := NewSampledImage(WIDTH, HEIGHT)
 
 	for y := 0; y < HEIGHT; y++ {
 		fmt.Println(y, "/", HEIGHT)
@@ -36,11 +34,9 @@ func RenderPathTracing(scene *Scene) *image.RGBA {
 			// Convert pixel coordinates to normalized device coordinates
 			uv := Vec2{X: (float64(x)/WIDTH)*2 - 1, Y: (float64(y)/HEIGHT)*2 - 1}
 			col := RenderPixel(scene, uv, SAMPLES)
-			col.Div(float64(SAMPLES))
-			energy += col.Intensity()
-			img.Set(x, y, col.ToSRGBA())
+			s.AddColorSamples(x, y, col, SAMPLES)
 		}
 	}
-	fmt.Println("Energy", energy)
-	return img
+	fmt.Println("Energy", s.Energy())
+	return s
 }

@@ -1,7 +1,20 @@
 package main
 
+import "math"
+
 type Vec2 struct {
 	X, Y float64
+}
+
+func NewVec2fromAngle(angle float64) Vec2 {
+	return Vec2{
+		X: math.Cos(angle),
+		Y: math.Sin(angle),
+	}
+}
+
+func (v *Vec2) Length() float64 {
+	return math.Hypot(v.X, v.Y)
 }
 
 type Ray struct {
