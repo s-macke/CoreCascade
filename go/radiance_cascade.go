@@ -63,58 +63,58 @@ func BiLinear(ratio Vec2, s0, s1, s2, s3 CascadeIntervalResult) CascadeIntervalR
 	}
 }
 
+func Radiance(scene *Scene, cc *CascadeCalculator, cascade int, i int, j int, index int) CascadeIntervalResult {
+	probe := cc.GetProbe(cascade, i, j, index)
+	visibility, color := scene.Intersect(probe.ray, probe.tmax)
+	return CascadeIntervalResult{
+		color:      color,
+		visibility: 1. - visibility, // 1. it hit nothing, 0. if hit
+	}
+}
+
 func RenderCascade(scene *Scene) *SampledImage {
 	const WIDTH, HEIGHT = 800, 800
 	s := NewSampledImage(WIDTH, HEIGHT)
 	cc := NewCascadeCalculator(WIDTH, HEIGHT)
-	cascadeResult := make([]*CascadeResult, cc.NCascades)
+	cascadeResult := make([]*CascadeResult, cc.NCascades+1)
 
-	for c := 0; c < cc.NCascades; c++ {
+	for c := 0; c < cc.NCascades+1; c++ {
 		ci := cc.cascadeInfo[c]
 		cascadeResult[c] = NewCascadeResult(ci)
-		for x := 0; x < ci.N+1; x++ {
-			for y := 0; y < ci.M+1; y++ {
-				for k := 0; k < ci.dirCount; k++ {
-					probe := cc.GetProbe(c, x, y, k)
-					visibility, color := scene.Intersect(probe.ray, probe.tmax)
-					cascadeResult[c].cascade[x][y][k].color = color
-					cascadeResult[c].cascade[x][y][k].visibility = 1. - visibility // 1. it hit nothing, 0. if hit
-				}
-			}
-		}
 	}
 
 	// merge
-	for c := cc.NCascades - 2; c >= 0; c-- {
-		ci := cc.cascadeInfo[c]
-		ciR := cascadeResult[c]
+	for c := cc.NCascades - 1; c >= 0; c-- {
+		ciNear := cc.cascadeInfo[c]
+		ciRNear := cascadeResult[c]
 
-		ci1 := cc.cascadeInfo[c+1]
-		ciR1 := cascadeResult[c+1]
+		ciFar := cc.cascadeInfo[c+1]
+		ciRFar := cascadeResult[c+1]
 
-		factor := float64(ci.dirCount) / float64(ci1.dirCount) // integration factor
-		nDirMerge := ci1.dirCount / ci.dirCount                // number of directions to merge
-		for x := 0; x < ci.N; x++ {
-			for y := 0; y < ci.M; y++ {
-				for k := 0; k < ci.dirCount; k++ {
+		factor := float64(ciNear.dirCount) / float64(ciFar.dirCount) // integration factor
+		nDirMerge := ciFar.dirCount / ciNear.dirCount                // number of directions to merge
+		for x := 0; x < ciNear.N; x++ {
+			for y := 0; y < ciNear.M; y++ {
+				for k := 0; k < ciNear.dirCount; k++ {
 					s := CascadeIntervalResult{}
+					siNearTemp := Radiance(scene, cc, c, x, y, k)
 					for kk := 0; kk < nDirMerge; kk++ {
-						d := 4*k + kk // direction index in the next cascade
-						si0 := ciR1.cascade[(x>>1)+0][(y>>1)+0][d]
-						si1 := ciR1.cascade[(x>>1)+1][(y>>1)+0][d]
-						si2 := ciR1.cascade[(x>>1)+0][(y>>1)+1][d]
-						si3 := ciR1.cascade[(x>>1)+1][(y>>1)+1][d]
-						var sBiLinear CascadeIntervalResult
+						siNear := siNearTemp // copy radiance
+						if c != cc.NCascades-1 {
+							d := 4*k + kk // direction index in the next cascade
+							si0 := ciRFar.cascade[(x>>1)+0][(y>>1)+0][d]
+							si1 := ciRFar.cascade[(x>>1)+1][(y>>1)+0][d]
+							si2 := ciRFar.cascade[(x>>1)+0][(y>>1)+1][d]
+							si3 := ciRFar.cascade[(x>>1)+1][(y>>1)+1][d]
+							var sBiLinear CascadeIntervalResult
+							sBiLinear = BiLinear(Vec2{X: float64(0.33333) + 0.333333*float64(x&1), Y: float64(0.33333) + 0.333333*float64(y&1)}, si0, si1, si2, si3)
 
-						sBiLinear = BiLinear(Vec2{X: float64(0.33333) + 0.333333*float64(x&1), Y: float64(0.33333) + 0.333333*float64(y&1)}, si0, si1, si2, si3)
-						//sBiLinear = BiLinear(Vec2{X: 0.5, Y: 0.5}, si0, si1, si2, si3)
-
-						si := ciR.cascade[x][y][k]
-						si.mergeIntervals(&sBiLinear)
-						s.Add(&si)
+							siNear.mergeIntervals(&sBiLinear)
+						}
+						s.Add(&siNear)
 					}
 					s.Mul(factor)
-					ciR.cascade[x][y][k] = s
+					ciRNear.cascade[x][y][k] = s
 				}
 			}
 		}

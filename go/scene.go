@@ -66,32 +66,12 @@ type Scene struct {
 
 func NewScene() *Scene {
 	s := &Scene{}
-	/*
-		s.objects = []sdObject{
-			//&Circle{Center: Vec2{X: -0.0, Y: 0}, Radius: 0.1, Color: Color{R: 1, G: 1, B: 1}},
-			//&Box{Center: Vec2{X: -1., Y: 0.}, HalfSize: Vec2{X: 0.1, Y: 1.0}, Color: Color{R: 1., G: 1., B: 1.}},
-			//&Box{Center: Vec2{X: -0.4, Y: 0.5}, HalfSize: Vec2{X: 0.1, Y: 0.5}, Color: Color{R: 0., G: 0, B: 0.0}},
-		}
-	*/
-	/*
-		s.objects = []sdObject{
-			//&Box{Center: Vec2{X: -1., Y: 0.00}, HalfSize: Vec2{X: 0.1, Y: 4.00}, Color: NewSRGBColor(1., 0., 1.)},
+	s.Scene4()
 
-			&Box{Center: Vec2{X: -1., Y: -1.00}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 0., 1.)},
-			&Box{Center: Vec2{X: -1., Y: -0.75}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 1., 1.)},
-			&Box{Center: Vec2{X: -1., Y: -0.5}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 1., 0.)},
-			&Box{Center: Vec2{X: -1., Y: -0.25}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0., 0., 1.)},
-			&Box{Center: Vec2{X: -1., Y: 0.0}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 0.5, 0.5)},
-			&Box{Center: Vec2{X: -1., Y: 0.25}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0., 1., 0.)},
-			&Box{Center: Vec2{X: -1., Y: 0.5}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0.5, 0.5, 1.)},
-			&Box{Center: Vec2{X: -1., Y: 0.75}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 0., 0.)},
-			&Box{Center: Vec2{X: -1., Y: 1.00}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0.5, 1., 0.5)},
+	return s
+}
 
-			&Box{Center: Vec2{X: -0., Y: -3.6}, HalfSize: Vec2{X: 0.02, Y: 3.55}, Color: Color{R: 0., G: 0, B: 0.0}},
-			&Box{Center: Vec2{X: -0., Y: 3.6}, HalfSize: Vec2{X: 0.02, Y: 3.55}, Color: Color{R: 0., G: 0, B: 0.0}},
-		}
-	*/
-
+func (s *Scene) Scene1() {
 	s.objects = []sdObject{
 		&Circle{Center: Vec2{X: 0., Y: 0.}, Radius: 0.05, Color: Color{R: 1., G: 1, B: 1.}},
 	}
@@ -101,18 +81,42 @@ func NewScene() *Scene {
 		y := math.Sin(float64(i)*2.*math.Pi/10.) * 0.5
 		s.objects = append(s.objects, &Circle{Center: Vec2{X: x, Y: y}, Radius: float64(i)/100. + 0.01, Color: Color{R: 0., G: 0, B: 0.}})
 	}
+}
 
-	/*
-		for i := 0; i < len(s.objects); i++ {
-			switch obj := s.objects[i].(type) {
-			case *Circle:
-				obj.Color.Mul(4.)
-			case *Box:
-				obj.Color.Mul(4.)
-			}
-		}
-	*/
-	return s
+func (s *Scene) Scene2() {
+	s.objects = []sdObject{
+		&Box{Center: Vec2{X: -1., Y: 0.}, HalfSize: Vec2{X: 0.1, Y: 0.25}, Color: Color{R: 1., G: 1., B: 1.}},
+		&Box{Center: Vec2{X: -0.3, Y: 0.60}, HalfSize: Vec2{X: 0.05, Y: 0.5}, Color: Color{R: 0., G: 0, B: 0}},
+	}
+}
+
+func (s *Scene) Scene3() {
+	s.objects = []sdObject{
+		//&Box{Center: Vec2{X: -1., Y: 0.00}, HalfSize: Vec2{X: 0.1, Y: 4.00}, Color: NewSRGBColor(1., 0., 1.)},
+
+		&Box{Center: Vec2{X: -1., Y: -1.00}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 0., 1.)},
+		&Box{Center: Vec2{X: -1., Y: -0.75}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 1., 1.)},
+		&Box{Center: Vec2{X: -1., Y: -0.5}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 1., 0.)},
+		&Box{Center: Vec2{X: -1., Y: -0.25}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0., 0., 1.)},
+		&Box{Center: Vec2{X: -1., Y: 0.0}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 0.5, 0.5)},
+		&Box{Center: Vec2{X: -1., Y: 0.25}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0., 1., 0.)},
+		&Box{Center: Vec2{X: -1., Y: 0.5}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0.5, 0.5, 1.)},
+		&Box{Center: Vec2{X: -1., Y: 0.75}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(1., 0., 0.)},
+		&Box{Center: Vec2{X: -1., Y: 1.00}, HalfSize: Vec2{X: 0.1, Y: 0.125}, Color: NewSRGBColor(0.5, 1., 0.5)},
+
+		&Box{Center: Vec2{X: -0., Y: -3.6}, HalfSize: Vec2{X: 0.02, Y: 3.55}, Color: Color{R: 0., G: 0, B: 0.0}},
+		&Box{Center: Vec2{X: -0., Y: 3.6}, HalfSize: Vec2{X: 0.02, Y: 3.55}, Color: Color{R: 0., G: 0, B: 0.0}},
+	}
+}
+
+func (s *Scene) Scene4() {
+	s.objects = []sdObject{
+		&Box{Center: Vec2{X: -1., Y: 0.}, HalfSize: Vec2{X: 0.1, Y: 0.25}, Color: Color{R: 2., G: 2., B: 2.}},
+		&Box{Center: Vec2{X: -0.3, Y: 0.60}, HalfSize: Vec2{X: 0.5, Y: 0.55}, Color: Color{R: 0., G: 0, B: 0}},
+		&Box{Center: Vec2{X: -0.3, Y: -0.60}, HalfSize: Vec2{X: 0.5, Y: 0.55}, Color: Color{R: 0., G: 0, B: 0}},
+		&Circle{Center: Vec2{X: 1., Y: 1.}, Radius: 0.05, Color: Color{R: 0.1, G: 0, B: 0.}},
+		&Circle{Center: Vec2{X: 1., Y: -1.}, Radius: 0.05, Color: Color{R: 0.1, G: 0, B: 0.}},
+	}
 }
 
 func (s *Scene) sd(p Vec2) (float64, Color) {
@@ -141,7 +145,7 @@ func (s *Scene) Intersect(r Ray, tmax float64) (float64, Color) {
 		if d < 1e-3 {
 			return 1., c
 		}
-		t += d
+		t += max(d, 0.01) // define some minimum step size, which is determined by the smalest object in the scene
 		if t > tmax {
 			return 0., black
 		}

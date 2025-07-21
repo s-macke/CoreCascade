@@ -66,6 +66,13 @@ func (s *SampledImage) SetColor(x, y int, col Color) {
 	s.pixels[y][x].Samples = 1
 }
 
+func (s *SampledImage) GetColor(x, y int) Color {
+	p := s.pixels[y][x]
+	c := p.Color
+	c.Div(float64(p.Samples))
+	return c
+}
+
 func (s *SampledImage) ToImage() *image.RGBA {
 	img := image.NewRGBA(image.Rect(0, 0, s.width, s.height))
 	for y := 0; y < s.height; y++ {
@@ -129,4 +136,22 @@ func (s *SampledImage) StoreRaw(filename string) {
 func (s *SampledImage) Store(filename string) {
 	s.StoreRaw(filename + ".raw")
 	s.StoreImage(filename + ".png")
+}
+
+func (s *SampledImage) Error(img *SampledImage) {
+	fmt.Println("Emergy of s:", s.Energy())
+	fmt.Println("Emergy of img:", img.Energy())
+	e := 0.0
+	for y := 0; y < s.height; y++ {
+		for x := 0; x < s.width; x++ {
+			c := s.GetColor(x, y)
+			c2 := img.GetColor(x, y)
+			c.Sub(c2)
+			c.Abs()
+			e += c.Intensity()
+			c.Mul(2.)
+			s.SetColor(x, y, c)
+		}
+	}
+	fmt.Println("Error:", e/float64(s.width*s.height))
 }

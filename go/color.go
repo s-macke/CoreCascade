@@ -25,6 +25,18 @@ func (c *Color) Add(other Color) {
 	c.B += other.B
 }
 
+func (c *Color) Sub(other Color) {
+	c.R -= other.R
+	c.G -= other.G
+	c.B -= other.B
+}
+
+func (c *Color) Abs() {
+	c.R = math.Abs(c.R)
+	c.G = math.Abs(c.G)
+	c.B = math.Abs(c.B)
+}
+
 func (c *Color) Div(f float64) {
 	invA := 1. / f
 	c.R *= invA

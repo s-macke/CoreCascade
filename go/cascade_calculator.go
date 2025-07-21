@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -42,30 +43,36 @@ func NewCascadeCalculator(width, height int) *CascadeCalculator {
 		width:  width,
 		height: height,
 	}
-	cc.dirCountC0 = 4
+	sceneWidth := 2.
+	sceneHeight := 2.
+	sceneDiagonal := math.Sqrt(sceneWidth*sceneWidth + sceneHeight*sceneHeight)
+
+	cc.dirCountC0 = 4 // Initial number of directions in the first cascade.
 	cc.dirCountMultiplier = 4
 	cc.RAY_INTERVAL_LENGTH_MULTIPLIER = 4.0
 
 	cc.PROBE_SPACING_MULTIPLIER = 2.0
-	cc.cellSizeC0 = 2. / float64(width) // from -1 to 1 in normalized device coordinates, so cell size is 2/width.
+	cc.cellSizeC0 = sceneWidth / float64(width) // from -1 to 1 in normalized device coordinates, so cell size is 2/width.
 	//lengthC0 := cc.cellSizeC0 * 0.5
 	lengthC0 := cc.cellSizeC0 * 1.0
 
-	cc.NCascades = 6
+	// determine the number of cascades based on the scene width and the length of the first cascade.
+	iFloat := math.Log(sceneDiagonal/lengthC0) / math.Log(cc.RAY_INTERVAL_LENGTH_MULTIPLIER)
+	cc.NCascades = int(iFloat) + 1
 
-	cc.cascadeInfo = make([]CascadeInfo, cc.NCascades)
+	cc.cascadeInfo = make([]CascadeInfo, cc.NCascades+1) // add one additional cascade into array to prevent out of bounds.
 	cc.cascadeInfo[0].dirCount = cc.dirCountC0
 	cc.cascadeInfo[0].spacing = cc.cellSizeC0
 	cc.cascadeInfo[0].N = width
 	cc.cascadeInfo[0].M = height
-	for i := 1; i < cc.NCascades; i++ {
+	for i := 1; i < cc.NCascades+1; i++ {
 		cc.cascadeInfo[i].dirCount = cc.cascadeInfo[i-1].dirCount * cc.dirCountMultiplier
 		cc.cascadeInfo[i].spacing = cc.cascadeInfo[i-1].spacing * cc.PROBE_SPACING_MULTIPLIER
 		cc.cascadeInfo[i].N = int(math.Ceil(float64(cc.cascadeInfo[i-1].N)/cc.PROBE_SPACING_MULTIPLIER)) + 1
 		cc.cascadeInfo[i].M = int(math.Ceil(float64(cc.cascadeInfo[i-1].M)/cc.PROBE_SPACING_MULTIPLIER)) + 1
 	}
 
-	for i := 0; i < cc.NCascades; i++ {
+	for i := 0; i < cc.NCascades+1; i++ {
 		cc.cascadeInfo[i].angleStart = 0.5 / float64(cc.cascadeInfo[i].dirCount) * math.Pi * 2.
 		cc.cascadeInfo[i].deltaAngle = 1. / float64(cc.cascadeInfo[i].dirCount) * math.Pi * 2.
 
@@ -83,11 +90,18 @@ func NewCascadeCalculator(width, height int) *CascadeCalculator {
 			}
 		}
 		cc.cascadeInfo[i].tEnd = lengthC0 * math.Pow(cc.RAY_INTERVAL_LENGTH_MULTIPLIER, float64(i))
-		/*
-			cc.cascadeInfo[i].tStart = 0.
-			cc.cascadeInfo[i].tEnd = 0.1
-		*/
+
+		//cc.cascadeInfo[i].tStart = 0.
+		//cc.cascadeInfo[i].tEnd = 0.1
 	}
+
+	fmt.Println("Number of cascades:", cc.NCascades)
+	N := 0
+	for _, ci := range cc.cascadeInfo {
+		N += ci.Total()
+	}
+	fmt.Println("Total number of probes:", N)
+
 	return cc
 }
 

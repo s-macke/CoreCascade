@@ -74,11 +74,20 @@ https://www.shadertoy.com/view/WddSDr
 # Turbulent Flame
 https://www.shadertoy.com/view/wffXDr
 
+# Vanilla Radiance Cascade 
+https://www.shadertoy.com/view/mtlBzX
+
 # Radiance Cascade Diagram
 https://www.shadertoy.com/view/4clcWn
 
 # Radiance Cacade Gear fix
 https://www.shadertoy.com/view/XffcD7
+
+# Radiance Cacade Forking fix
+https://www.shadertoy.com/view/4clcWn
+
+# RC Experimental Testbed 
+https://www.shadertoy.com/view/4ctXD8
 
 # Fast FBM Sphere Tracing
 https://www.shadertoy.com/view/MXyBDW
@@ -101,6 +110,15 @@ RMSE - Root mean Square Error
 PT - Path Tracing
 NEE - Next Event Estimation
 DDA - Digital Differential Analyzer
+
+# Improvements
+- Bilinear fix
+- Gear fix
+- nearest fix
+- Forking fix
+- pre-averaging
+- mipmapping
+- Holographic
 
 # RMSE
 sqrt( (1/N) * sum( (I - I')^2 ) )
