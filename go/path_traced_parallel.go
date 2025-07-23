@@ -25,13 +25,13 @@ func RenderPathTracingIteration(scene *Scene, s *SampledImage, samples int) {
 	wg.Wait()
 }
 
-func RenderPathTracingParallel(scene *Scene) *SampledImage {
+func RenderPathTracingParallel(scene *Scene, maxIterations int) *SampledImage {
 	const WIDTH, HEIGHT = 800, 800
 	const SAMPLES = 200
-	const ITER = 10000
+	//const ITER = 10000
 	s := NewSampledImage(WIDTH, HEIGHT)
-	for i := 1; i <= ITER; i++ {
-		fmt.Printf("Iteration %d / %d\n", i, ITER)
+	for i := 1; i <= maxIterations; i++ {
+		fmt.Printf("Iteration %d / %d\n", i, maxIterations)
 		RenderPathTracingIteration(scene, s, SAMPLES)
 		s.Store("iter")
 	}

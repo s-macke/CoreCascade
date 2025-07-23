@@ -1,12 +1,11 @@
 package main
 
 func main() {
-	//img := NewSampledImageFromFile("output.raw")
-	//img.StoreImage("output3.png")
-	scene := NewScene()
+	scene := NewScene(Scene2)
+
 	//img := RenderPathTracing(scene)
-	//img := RenderPathTracingParallel(scene)
-	img := RenderCascade(scene)
+	//img := RenderPathTracingParallel(scene, 100)
+	img := NewRadianceCascadeVanilla(scene).Render()
 	img.Store("output")
 	/*
 		truth := NewSampledImageFromFile("ring_shadow.raw")
@@ -18,5 +17,9 @@ func main() {
 		PlotCascade()
 		PlotCascade2()
 		PlotCascade3()
+		PlotCascade4()
+		PlotCascade5()
 	*/
+	PlotEnergy(img)
+
 }

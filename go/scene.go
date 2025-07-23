@@ -64,10 +64,30 @@ type Scene struct {
 	objects []sdObject
 }
 
-func NewScene() *Scene {
-	s := &Scene{}
-	s.Scene4()
+type SceneState int
 
+const (
+	Scene1 SceneState = iota
+	Scene2
+	Scene3
+	Scene4
+	Scene5
+)
+
+func NewScene(state SceneState) *Scene {
+	s := &Scene{}
+	switch state {
+	case Scene1:
+		s.Scene1()
+	case Scene2:
+		s.Scene2()
+	case Scene3:
+		s.Scene3()
+	case Scene4:
+		s.Scene4()
+	case Scene5:
+		s.Scene5()
+	}
 	return s
 }
 
@@ -112,11 +132,23 @@ func (s *Scene) Scene3() {
 func (s *Scene) Scene4() {
 	s.objects = []sdObject{
 		&Box{Center: Vec2{X: -1., Y: 0.}, HalfSize: Vec2{X: 0.1, Y: 0.25}, Color: Color{R: 2., G: 2., B: 2.}},
-		&Box{Center: Vec2{X: -0.3, Y: 0.60}, HalfSize: Vec2{X: 0.5, Y: 0.55}, Color: Color{R: 0., G: 0, B: 0}},
-		&Box{Center: Vec2{X: -0.3, Y: -0.60}, HalfSize: Vec2{X: 0.5, Y: 0.55}, Color: Color{R: 0., G: 0, B: 0}},
+		&Box{Center: Vec2{X: -0.3, Y: 1.00}, HalfSize: Vec2{X: 0.5, Y: 0.95}, Color: Color{R: 0., G: 0, B: 0}},
+		&Box{Center: Vec2{X: -0.3, Y: -1.00}, HalfSize: Vec2{X: 0.5, Y: 0.95}, Color: Color{R: 0., G: 0, B: 0}},
 		&Circle{Center: Vec2{X: 1., Y: 1.}, Radius: 0.05, Color: Color{R: 0.1, G: 0, B: 0.}},
 		&Circle{Center: Vec2{X: 1., Y: -1.}, Radius: 0.05, Color: Color{R: 0.1, G: 0, B: 0.}},
 	}
+}
+
+func (s *Scene) Scene5() {
+	s.objects = []sdObject{
+		&Circle{Center: Vec2{X: 0., Y: -0.}, Radius: 0.05, Color: Color{R: 1, G: 1, B: 1.}},
+	}
+}
+
+func (s *Scene) GetExtent() (Vec2, Vec2) {
+	// Return the extent of the scene
+	// This is used to define the bounds for rendering or ray tracing
+	return Vec2{X: -1.0, Y: -1.0}, Vec2{X: 1.0, Y: 1.0}
 }
 
 func (s *Scene) sd(p Vec2) (float64, Color) {

@@ -63,33 +63,68 @@ func BiLinear(ratio Vec2, s0, s1, s2, s3 CascadeIntervalResult) CascadeIntervalR
 	}
 }
 
-func Radiance(scene *Scene, cc *CascadeCalculator, cascade int, i int, j int, index int) CascadeIntervalResult {
-	probe := cc.GetProbe(cascade, i, j, index)
-	visibility, color := scene.Intersect(probe.ray, probe.tmax)
+type RadianceCascadeVanilla struct {
+	WIDTH, HEIGHT int
+	scene         *Scene
+	s             *SampledImage
+	cc            *CascadeCalculator
+	cascadeResult []*CascadeResult
+}
+
+func NewRadianceCascadeVanilla(scene *Scene) *RadianceCascadeVanilla {
+	const WIDTH, HEIGHT = 800, 800
+	rc := &RadianceCascadeVanilla{
+		WIDTH:  WIDTH,
+		HEIGHT: HEIGHT,
+		s:      NewSampledImage(WIDTH, HEIGHT),
+		cc:     NewCascadeCalculator(WIDTH, HEIGHT),
+		scene:  scene,
+	}
+	rc.cascadeResult = make([]*CascadeResult, rc.cc.NCascades+1)
+
+	for c := 0; c < rc.cc.NCascades+1; c++ {
+		ci := rc.cc.cascadeInfo[c]
+		rc.cascadeResult[c] = NewCascadeResult(ci)
+	}
+
+	return rc
+}
+
+func (rc *RadianceCascadeVanilla) MergeOnImage() {
+	// final merge of c0 to determine the pixel color
+	c0 := rc.cc.cascadeInfo[0]
+	c0R := rc.cascadeResult[0]
+	for y := 0; y < rc.HEIGHT; y++ {
+		for x := 0; x < rc.WIDTH; x++ {
+			col := Black
+			for k := 0; k < c0.dirCount; k++ {
+				col.Add(c0R.cascade[x][y][k].color)
+			}
+			col.Div(float64(c0.dirCount)) // average the colors
+			//col.Mul(2. * math.Pi)
+			rc.s.SetColor(x, y, col)
+		}
+	}
+}
+
+func (rc *RadianceCascadeVanilla) Radiance(cascade int, i int, j int, index int) CascadeIntervalResult {
+	probe := rc.cc.GetProbe(cascade, i, j, index)
+	visibility, color := rc.scene.Intersect(probe.ray, probe.tmax)
 	return CascadeIntervalResult{
 		color:      color,
 		visibility: 1. - visibility, // 1. it hit nothing, 0. if hit
 	}
 }
 
-func RenderCascade(scene *Scene) *SampledImage {
-	const WIDTH, HEIGHT = 800, 800
-	s := NewSampledImage(WIDTH, HEIGHT)
-	cc := NewCascadeCalculator(WIDTH, HEIGHT)
-	cascadeResult := make([]*CascadeResult, cc.NCascades+1)
+func (rc *RadianceCascadeVanilla) Render() *SampledImage {
+	rc.s.Clear()
 
-	for c := 0; c < cc.NCascades+1; c++ {
-		ci := cc.cascadeInfo[c]
-		cascadeResult[c] = NewCascadeResult(ci)
-	}
+	for c := rc.cc.NCascades - 1; c >= 0; c-- {
+		ciNear := rc.cc.cascadeInfo[c]
+		ciRNear := rc.cascadeResult[c]
 
-	// merge
-	for c := cc.NCascades - 1; c >= 0; c-- {
-		ciNear := cc.cascadeInfo[c]
-		ciRNear := cascadeResult[c]
-
-		ciFar := cc.cascadeInfo[c+1]
-		ciRFar := cascadeResult[c+1]
+		ciFar := rc.cc.cascadeInfo[c+1]
+		ciRFar := rc.cascadeResult[c+1]
 
 		factor := float64(ciNear.dirCount) / float64(ciFar.dirCount) // integration factor
 		nDirMerge := ciFar.dirCount / ciNear.dirCount                // number of directions to merge
@@ -97,10 +132,10 @@ func RenderCascade(scene *Scene) *SampledImage {
 			for y := 0; y < ciNear.M; y++ {
 				for k := 0; k < ciNear.dirCount; k++ {
 					s := CascadeIntervalResult{}
-					siNearTemp := Radiance(scene, cc, c, x, y, k)
+					siNearTemp := rc.Radiance(c, x, y, k)
 					for kk := 0; kk < nDirMerge; kk++ {
 						siNear := siNearTemp // copy radiance
-						if c != cc.NCascades-1 {
+						if c != rc.cc.NCascades-1 {
 							d := 4*k + kk // direction index in the next cascade
 							si0 := ciRFar.cascade[(x>>1)+0][(y>>1)+0][d]
 							si1 := ciRFar.cascade[(x>>1)+1][(y>>1)+0][d]
@@ -137,19 +172,6 @@ func RenderCascade(scene *Scene) *SampledImage {
 			}
 		}
 	*/
-	// final merge of c0 to determine the pixel color
-	c0 := cc.cascadeInfo[0]
-	c0R := cascadeResult[0]
-	for y := 0; y < HEIGHT; y++ {
-		for x := 0; x < WIDTH; x++ {
-			col := Color{R: 0, G: 0, B: 0}
-			for k := 0; k < c0.dirCount; k++ {
-				col.Add(c0R.cascade[x][y][k].color)
-			}
-			col.Mul(1.0 / float64(c0.dirCount)) // average the colors
-			//col.Mul(2. * math.Pi)
-			s.SetColor(x, y, col)
-		}
-	}
-	return s
+	rc.MergeOnImage()
+	return rc.s
 }

@@ -6,11 +6,10 @@ import (
 )
 
 func PlotSignedDistance() {
-	scene := NewScene()
-	for x := -20.0; x <= 20.0; x += 0.5 {
-		for y := -20.0; y <= 20.0; y += 0.5 {
-			p := Vec2{X: x, Y: y}
-			d, _ := scene.sd(p)
+	scene := NewScene(Scene1)
+	for x := -2.0; x <= 2.0; x += 0.1 {
+		for y := -2.0; y <= 2.0; y += 0.1 {
+			d, _ := scene.sd(Vec2{X: x, Y: y})
 			fmt.Println(x, y, d)
 		}
 		fmt.Println()
@@ -121,4 +120,66 @@ func PlotCascade3() {
 		}
 		fmt.Fprintln(f)
 	}
+}
+
+func PlotCascade4() {
+	f, err := os.Create("plots/plot4.data")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	const WIDTH, HEIGHT = 32, 32
+	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	fmt.Fprintln(f, "# NCascades", cc.NCascades)
+	for c := 0; c < cc.NCascades; c++ {
+		ci := cc.cascadeInfo[c]
+		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
+		for i := 0; i < ci.N; i++ {
+			for j := 0; j < ci.M; j++ {
+				for k := 0; k < ci.dirCount; k++ {
+					probe := cc.GetProbeCenter(c, i, j)
+					fmt.Fprintf(f, "%f %f\n", probe.X, probe.Y)
+				}
+			}
+		}
+		fmt.Fprintln(f)
+	}
+}
+
+func PlotCascade5() {
+	f, err := os.Create("plots/plot5.data")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	const WIDTH, HEIGHT = 256, 256
+	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	fmt.Fprintln(f, "# NCascades", cc.NCascades)
+	for c := 0; c < cc.NCascades; c++ {
+		ci := cc.cascadeInfo[c]
+		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
+		probeCenter := cc.GetProbeCenter(c, 0, 0)
+		for k := 0; k < ci.dirCount; k++ {
+			probe := cc.GetProbe(c, 0, 0, k)
+			probe.ray.p.Sub(probeCenter)
+			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+		}
+		fmt.Fprintln(f)
+	}
+}
+
+func PlotEnergy(s *SampledImage) {
+	f, err := os.Create("plots/plotEnergy.data")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	for x := -350; x < 350; x++ {
+		color := s.GetColor(s.width/2+x, s.height/2)
+		fmt.Fprintln(f, x, color.Intensity())
+	}
+
 }

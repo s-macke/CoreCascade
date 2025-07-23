@@ -17,6 +17,16 @@ func (v *Vec2) Length() float64 {
 	return math.Hypot(v.X, v.Y)
 }
 
+func (v *Vec2) Add(w Vec2) {
+	v.X += w.X
+	v.Y += w.Y
+}
+
+func (v *Vec2) Sub(w Vec2) {
+	v.X -= w.X
+	v.Y -= w.Y
+}
+
 type Ray struct {
 	p   Vec2
 	dir Vec2

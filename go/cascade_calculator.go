@@ -46,19 +46,24 @@ func NewCascadeCalculator(width, height int) *CascadeCalculator {
 	sceneWidth := 2.
 	sceneHeight := 2.
 	sceneDiagonal := math.Sqrt(sceneWidth*sceneWidth + sceneHeight*sceneHeight)
+	//sceneDiagonal := max(sceneWidth, sceneHeight) // Use the maximum of width and height for the diagonal.
 
 	cc.dirCountC0 = 4 // Initial number of directions in the first cascade.
 	cc.dirCountMultiplier = 4
 	cc.RAY_INTERVAL_LENGTH_MULTIPLIER = 4.0
 
 	cc.PROBE_SPACING_MULTIPLIER = 2.0
+
 	cc.cellSizeC0 = sceneWidth / float64(width) // from -1 to 1 in normalized device coordinates, so cell size is 2/width.
 	//lengthC0 := cc.cellSizeC0 * 0.5
 	lengthC0 := cc.cellSizeC0 * 1.0
 
 	// determine the number of cascades based on the scene width and the length of the first cascade.
 	iFloat := math.Log(sceneDiagonal/lengthC0) / math.Log(cc.RAY_INTERVAL_LENGTH_MULTIPLIER)
-	cc.NCascades = int(iFloat) + 1
+	fmt.Println("iFloat:", iFloat)
+	fmt.Println("diagonal:", sceneDiagonal)
+	cc.NCascades = int(math.Ceil(iFloat)) + 1 // add one, because we iterate to NCascades - 1 in the loop.
+	fmt.Println("maximum length:", lengthC0*math.Pow(cc.RAY_INTERVAL_LENGTH_MULTIPLIER, float64(cc.NCascades-1)))
 
 	cc.cascadeInfo = make([]CascadeInfo, cc.NCascades+1) // add one additional cascade into array to prevent out of bounds.
 	cc.cascadeInfo[0].dirCount = cc.dirCountC0

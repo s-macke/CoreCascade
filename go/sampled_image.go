@@ -27,7 +27,7 @@ func NewSampledImage(width, height int) *SampledImage {
 	for i := range s.pixels {
 		s.pixels[i] = make([]SampledPixel, width)
 		for j := range s.pixels[i] {
-			s.pixels[i][j] = SampledPixel{Color: Color{R: 0, G: 0, B: 0}, Samples: 0}
+			s.pixels[i][j] = SampledPixel{Color: Black, Samples: 0}
 		}
 	}
 	return s
@@ -54,6 +54,15 @@ func NewSampledImageFromFile(filename string) *SampledImage {
 	}
 
 	return s
+}
+
+func (s *SampledImage) Clear() {
+	for y := 0; y < s.height; y++ {
+		for x := 0; x < s.width; x++ {
+			s.pixels[y][x].Samples = 0
+			s.pixels[y][x].Color = Black
+		}
+	}
 }
 
 func (s *SampledImage) AddColorSamples(x, y int, col Color, samples int) {
@@ -139,8 +148,8 @@ func (s *SampledImage) Store(filename string) {
 }
 
 func (s *SampledImage) Error(img *SampledImage) {
-	fmt.Println("Emergy of s:", s.Energy())
-	fmt.Println("Emergy of img:", img.Energy())
+	fmt.Println("Energy of s:", s.Energy())
+	fmt.Println("Energy of img:", img.Energy())
 	e := 0.0
 	for y := 0; y < s.height; y++ {
 		for x := 0; x < s.width; x++ {
