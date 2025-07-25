@@ -1,15 +1,16 @@
 package main
 
 import (
+	"CoreCascade/primitives"
 	"fmt"
 	"os"
 )
 
 func PlotSignedDistance() {
-	scene := NewScene(Scene1)
+	scene := NewScene("shadows")
 	for x := -2.0; x <= 2.0; x += 0.1 {
 		for y := -2.0; y <= 2.0; y += 0.1 {
-			d, _ := scene.sd(Vec2{X: x, Y: y})
+			d, _ := scene.SignedDistance(primitives.Vec2{X: x, Y: y})
 			fmt.Println(x, y, d)
 		}
 		fmt.Println()
@@ -24,17 +25,17 @@ func PlotCascade() {
 	}
 	defer f.Close()
 
-	const WIDTH, HEIGHT = 800, 800
+	const WIDTH, HEIGHT = 4, 4
 	cc := NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < 3; c++ {
 		ci := cc.cascadeInfo[c]
 		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
-		for i := 0; i < 4>>c; i++ {
-			for j := 0; j < 4>>c; j++ {
+		for i := 0; i < ci.N; i++ {
+			for j := 0; j < ci.M; j++ {
 				for k := 0; k < ci.dirCount; k++ {
 					probe := cc.GetProbe(c, i, j, k)
-					fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+					fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 				}
 			}
 		}
@@ -56,7 +57,7 @@ func PlotCascade2() {
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
 			probe := cc.GetProbe(0, i, j, k)
-			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 		}
 	}
 	fmt.Fprintln(f)
@@ -66,7 +67,7 @@ func PlotCascade2() {
 			for kk := 0; kk < 4; kk++ {
 				d := 4*k + kk
 				probe := cc.GetProbe(1, i, j, d)
-				fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+				fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 			}
 		}
 	}
@@ -77,7 +78,7 @@ func PlotCascade2() {
 			for kk := 0; kk < 4; kk++ {
 				d := 4*k + kk
 				probe := cc.GetProbe(2, i, j, d)
-				fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+				fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 			}
 
 		}
@@ -104,7 +105,7 @@ func PlotCascade3() {
 				for j := 0; j < ci.M; j++ {
 					for k := 0; k < ci.dirCount; k++ {
 						probe := cc.GetProbe(c, i, j, k)
-						fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+						fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 					}
 				}
 			}
@@ -113,7 +114,7 @@ func PlotCascade3() {
 				for j := 0; j < ci.M; j++ {
 					for k := 0; k < ci.dirCount; k++ {
 						probe := cc.GetProbe(c, i, j, k)
-						fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+						fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 					}
 				}
 			}
@@ -163,14 +164,14 @@ func PlotCascade5() {
 		probeCenter := cc.GetProbeCenter(c, 0, 0)
 		for k := 0; k < ci.dirCount; k++ {
 			probe := cc.GetProbe(c, 0, 0, k)
-			probe.ray.p.Sub(probeCenter)
-			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.p.X, probe.ray.p.Y, probe.ray.dir.X*probe.tmax, probe.ray.dir.Y*probe.tmax)
+			probe.ray.P.Sub(probeCenter)
+			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
 		}
 		fmt.Fprintln(f)
 	}
 }
 
-func PlotEnergy(s *SampledImage) {
+func PlotEnergy(s *primitives.SampledImage) {
 	f, err := os.Create("plots/plotEnergy.data")
 	if err != nil {
 		panic(err)
@@ -178,7 +179,7 @@ func PlotEnergy(s *SampledImage) {
 	defer f.Close()
 
 	for x := -350; x < 350; x++ {
-		color := s.GetColor(s.width/2+x, s.height/2)
+		color := s.GetColor(s.Width/2+x, s.Height/2)
 		fmt.Fprintln(f, x, color.Intensity())
 	}
 

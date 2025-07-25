@@ -1,7 +1,12 @@
 package main
 
+import (
+	"CoreCascade/primitives"
+	"CoreCascade/scene"
+)
+
 type CascadeIntervalResult struct {
-	color      Color
+	color      primitives.Color
 	visibility float64 // 1.0 if the interval hit nothing, and 0.0 it it did.
 }
 
@@ -39,7 +44,7 @@ func NewCascadeResult(c CascadeInfo) *CascadeResult {
 			cr.cascade[i][j] = make([]CascadeIntervalResult, c.dirCount)
 			for k := 0; k < c.dirCount; k++ {
 				cr.cascade[i][j][k] = CascadeIntervalResult{
-					color:      Color{R: 0, G: 0, B: 0},
+					color:      primitives.Color{R: 0, G: 0, B: 0},
 					visibility: 0.0,
 				}
 			}
@@ -48,13 +53,13 @@ func NewCascadeResult(c CascadeInfo) *CascadeResult {
 	return cr
 }
 
-func BiLinear(ratio Vec2, s0, s1, s2, s3 CascadeIntervalResult) CascadeIntervalResult {
+func BiLinear(ratio primitives.Vec2, s0, s1, s2, s3 CascadeIntervalResult) CascadeIntervalResult {
 	w1 := (1. - ratio.X) * (1. - ratio.Y)
 	w2 := ratio.X * (1. - ratio.Y)
 	w3 := (1. - ratio.X) * ratio.Y
 	w4 := ratio.X * ratio.Y
 	return CascadeIntervalResult{
-		color: Color{
+		color: primitives.Color{
 			R: s0.color.R*w1 + s1.color.R*w2 + s2.color.R*w3 + s3.color.R*w4,
 			G: s0.color.G*w1 + s1.color.G*w2 + s2.color.G*w3 + s3.color.G*w4,
 			B: s0.color.B*w1 + s1.color.B*w2 + s2.color.B*w3 + s3.color.B*w4,
@@ -64,20 +69,19 @@ func BiLinear(ratio Vec2, s0, s1, s2, s3 CascadeIntervalResult) CascadeIntervalR
 }
 
 type RadianceCascadeVanilla struct {
-	WIDTH, HEIGHT int
-	scene         *Scene
-	s             *SampledImage
+	width, height int
+	scene         *scene.Scene
+	s             *primitives.SampledImage
 	cc            *CascadeCalculator
 	cascadeResult []*CascadeResult
 }
 
-func NewRadianceCascadeVanilla(scene *Scene) *RadianceCascadeVanilla {
-	const WIDTH, HEIGHT = 800, 800
+func NewRadianceCascadeVanilla(scene *scene.Scene, s *primitives.SampledImage) *RadianceCascadeVanilla {
 	rc := &RadianceCascadeVanilla{
-		WIDTH:  WIDTH,
-		HEIGHT: HEIGHT,
-		s:      NewSampledImage(WIDTH, HEIGHT),
-		cc:     NewCascadeCalculator(WIDTH, HEIGHT),
+		width:  s.Width,
+		height: s.Height,
+		s:      s,
+		cc:     NewCascadeCalculator(s.Width, s.Height),
 		scene:  scene,
 	}
 	rc.cascadeResult = make([]*CascadeResult, rc.cc.NCascades+1)
@@ -94,9 +98,9 @@ func (rc *RadianceCascadeVanilla) MergeOnImage() {
 	// final merge of c0 to determine the pixel color
 	c0 := rc.cc.cascadeInfo[0]
 	c0R := rc.cascadeResult[0]
-	for y := 0; y < rc.HEIGHT; y++ {
-		for x := 0; x < rc.WIDTH; x++ {
-			col := Black
+	for y := 0; y < rc.height; y++ {
+		for x := 0; x < rc.width; x++ {
+			col := primitives.Black
 			for k := 0; k < c0.dirCount; k++ {
 				col.Add(c0R.cascade[x][y][k].color)
 			}
@@ -109,14 +113,21 @@ func (rc *RadianceCascadeVanilla) MergeOnImage() {
 
 func (rc *RadianceCascadeVanilla) Radiance(cascade int, i int, j int, index int) CascadeIntervalResult {
 	probe := rc.cc.GetProbe(cascade, i, j, index)
-	visibility, color := rc.scene.Intersect(probe.ray, probe.tmax)
+	hit, color := rc.scene.Intersect(probe.ray, probe.tmax)
+
+	// 1. it hit nothing, 0. if hit
+	visibility := 1.
+	if hit {
+		visibility = 0.
+	}
+
 	return CascadeIntervalResult{
 		color:      color,
-		visibility: 1. - visibility, // 1. it hit nothing, 0. if hit
+		visibility: visibility,
 	}
 }
 
-func (rc *RadianceCascadeVanilla) Render() *SampledImage {
+func (rc *RadianceCascadeVanilla) Render() *primitives.SampledImage {
 	rc.s.Clear()
 
 	for c := rc.cc.NCascades - 1; c >= 0; c-- {
@@ -142,7 +153,7 @@ func (rc *RadianceCascadeVanilla) Render() *SampledImage {
 							si2 := ciRFar.cascade[(x>>1)+0][(y>>1)+1][d]
 							si3 := ciRFar.cascade[(x>>1)+1][(y>>1)+1][d]
 							var sBiLinear CascadeIntervalResult
-							sBiLinear = BiLinear(Vec2{X: float64(0.33333) + 0.333333*float64(x&1), Y: float64(0.33333) + 0.333333*float64(y&1)}, si0, si1, si2, si3)
+							sBiLinear = BiLinear(primitives.Vec2{X: float64(0.33333) + 0.333333*float64(x&1), Y: float64(0.33333) + 0.333333*float64(y&1)}, si0, si1, si2, si3)
 
 							siNear.mergeIntervals(&sBiLinear)
 						}

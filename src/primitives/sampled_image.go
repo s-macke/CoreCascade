@@ -1,7 +1,7 @@
-package main
+package primitives
 
 import (
-	"cascade/filebuffer"
+	"CoreCascade/filebuffer"
 	"fmt"
 	"image"
 	"image/png"
@@ -15,13 +15,13 @@ type SampledPixel struct {
 
 type SampledImage struct {
 	pixels        [][]SampledPixel
-	width, height int
+	Width, Height int
 }
 
 func NewSampledImage(width, height int) *SampledImage {
 	s := &SampledImage{
-		width:  width,
-		height: height,
+		Width:  width,
+		Height: height,
 	}
 	s.pixels = make([][]SampledPixel, height)
 	for i := range s.pixels {
@@ -43,8 +43,8 @@ func NewSampledImageFromFile(filename string) *SampledImage {
 	height := rb.ReadInt(4)
 	s := NewSampledImage(width, height)
 
-	for y := 0; y < s.height; y++ {
-		for x := 0; x < s.width; x++ {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
 			sp := &s.pixels[y][x]
 			sp.Color.R = rb.ReadFloat64()
 			sp.Color.G = rb.ReadFloat64()
@@ -57,8 +57,8 @@ func NewSampledImageFromFile(filename string) *SampledImage {
 }
 
 func (s *SampledImage) Clear() {
-	for y := 0; y < s.height; y++ {
-		for x := 0; x < s.width; x++ {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
 			s.pixels[y][x].Samples = 0
 			s.pixels[y][x].Color = Black
 		}
@@ -83,9 +83,9 @@ func (s *SampledImage) GetColor(x, y int) Color {
 }
 
 func (s *SampledImage) ToImage() *image.RGBA {
-	img := image.NewRGBA(image.Rect(0, 0, s.width, s.height))
-	for y := 0; y < s.height; y++ {
-		for x := 0; x < s.width; x++ {
+	img := image.NewRGBA(image.Rect(0, 0, s.Width, s.Height))
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
 			p := s.pixels[y][x]
 			c := p.Color
 			c.Div(float64(p.Samples))
@@ -97,8 +97,8 @@ func (s *SampledImage) ToImage() *image.RGBA {
 
 func (s *SampledImage) Energy() float64 {
 	energy := 0.
-	for y := 0; y < s.height; y++ {
-		for x := 0; x < s.width; x++ {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
 			p := s.pixels[y][x]
 			c := p.Color
 			c.Div(float64(p.Samples))
@@ -126,12 +126,12 @@ func (s *SampledImage) StoreImage(filename string) {
 }
 
 func (s *SampledImage) StoreRaw(filename string) {
-	wb := filebuffer.NewWriteBuffer(32 + 8 + s.width*s.height*(3*8+4))
+	wb := filebuffer.NewWriteBuffer(32 + 8 + s.Width*s.Height*(3*8+4))
 	wb.WriteString("CoreCascade Sampled Image V1.0  ")
-	wb.WriteInt32(int32(s.width))
-	wb.WriteInt32(int32(s.height))
-	for y := 0; y < s.height; y++ {
-		for x := 0; x < s.width; x++ {
+	wb.WriteInt32(int32(s.Width))
+	wb.WriteInt32(int32(s.Height))
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
 			sp := s.pixels[y][x]
 			wb.WriteFloat64(sp.Color.R)
 			wb.WriteFloat64(sp.Color.G)
@@ -151,8 +151,12 @@ func (s *SampledImage) Error(img *SampledImage) {
 	fmt.Println("Energy of s:", s.Energy())
 	fmt.Println("Energy of img:", img.Energy())
 	e := 0.0
-	for y := 0; y < s.height; y++ {
-		for x := 0; x < s.width; x++ {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
+			r := (s.Width-img.Width/2)*(s.Width-img.Width/2) + (s.Height-img.Height/2)*(s.Height-img.Height/2)
+			if r < 150 {
+				continue // skip pixels that are too far from the image
+			}
 			c := s.GetColor(x, y)
 			c2 := img.GetColor(x, y)
 			c.Sub(c2)
@@ -162,5 +166,5 @@ func (s *SampledImage) Error(img *SampledImage) {
 			s.SetColor(x, y, c)
 		}
 	}
-	fmt.Println("Error:", e/float64(s.width*s.height))
+	fmt.Println("Error:", e/float64(s.Width*s.Height))
 }

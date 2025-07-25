@@ -1,2 +1,2 @@
 set -e
-(cd go && go build -o ../cascade)
+(cd src && go build -o ../CoreCascade)
