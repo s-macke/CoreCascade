@@ -20,40 +20,25 @@ Radiance Cascades is a hierarchical probe-based global illumination technique th
 
 ### Prerequisites
 
-- Go 1.23.9 or later
+- Go 1.23 or later
 - Standard Go toolchain
 
 ### Building
 
-```bash
-./build.sh
-```
-
 Or build directly:
 ```bash
-cd go && go build -o ../cascade
+cd src && go build -o ../cascade
 ```
 
 ### Running
 
 ```bash
-./cascade
+./CoreCascade
 ```
 
 This will:
 - Generate `output.png` with the rendered scene
 - Create visualization plots in the `plots/` directory
-
-### Switching Rendering Methods
-
-Edit `go/main.go` and uncomment your desired rendering method:
-
-```go
-// Choose one:
-img := RenderPathTracing(scene)           // Standard path tracing (default)
-//img := RenderPathTracingParallel(scene)  // Parallel path tracing
-//img := RenderCascade(scene)             // Radiance Cascades
-```
 
 ## Algorithm Overview
 
@@ -77,12 +62,17 @@ Scenes use Signed Distance Fields (SDFs) with the following primitives:
 - **Circle**: Defined by center, radius, and color
 - **Box**: Axis-aligned box with center, dimensions, and color
 
-## Visualization
+## Results
 
-The project generates several plots to visualize the cascade behavior:
-- Cascade probe positions at different levels
-- Ray interval demonstrations
-- Angular resolution comparisons
+![Center Circle](/assets/center.jpg)
+![Color Pinhole](/assets/pinhole.jpg)
+![Long Pinhole](/assets/beam.jpg)
+![Penunbra](/assets/penumbra.jpg)
+![Shadows](/assets/shadows.jpg)
+
+![Shadows](/plots/movie.gif)
+![Shadows](/plots/plot4.png)
+![Shadows](/plots/plot5.png)
 
 ## References
 

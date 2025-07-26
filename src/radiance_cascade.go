@@ -127,43 +127,66 @@ func (rc *RadianceCascadeVanilla) Radiance(cascade int, i int, j int, index int)
 	}
 }
 
-func (rc *RadianceCascadeVanilla) Render() *primitives.SampledImage {
+func (rc *RadianceCascadeVanilla) Cascade(c int) {
+	ciNear := rc.cc.cascadeInfo[c]
+	ciRNear := rc.cascadeResult[c]
+
+	ciFar := rc.cc.cascadeInfo[c+1]
+	ciRFar := rc.cascadeResult[c+1]
+
+	factor := float64(ciNear.dirCount) / float64(ciFar.dirCount) // integration factor
+	nDirMerge := ciFar.dirCount / ciNear.dirCount                // number of directions to merge
+	for x := 0; x < ciNear.N; x++ {
+		for y := 0; y < ciNear.M; y++ {
+			for k := 0; k < ciNear.dirCount; k++ {
+				s := CascadeIntervalResult{}
+				siNearTemp := rc.Radiance(c, x, y, k)
+				for kk := 0; kk < nDirMerge; kk++ {
+					siNear := siNearTemp // copy radiance
+					if c != rc.cc.NCascades-1 {
+						d := 4*k + kk // direction index in the next cascade
+						si0 := ciRFar.cascade[(x>>1)+0][(y>>1)+0][d]
+						si1 := ciRFar.cascade[(x>>1)+1][(y>>1)+0][d]
+						si2 := ciRFar.cascade[(x>>1)+0][(y>>1)+1][d]
+						si3 := ciRFar.cascade[(x>>1)+1][(y>>1)+1][d]
+						/*
+							rnear := rc.cc.GetProbeCenter(c, x, y)
+							rfar0 := rc.cc.GetProbeCenter(c+1, x>>1, y>>1)
+							rfar1 := rc.cc.GetProbeCenter(c+1, (x>>1)+1, y>>1)
+							fmt.Println("total ", rfar1.X-rfar0.X, rnear.X-rfar0.X, rnear.X-rfar1.X)
+							if rfar0.X > rnear.X {
+								panic("Bad cascade")
+							}
+							if rfar0.Y > rnear.Y {
+								panic("Bad cascade")
+							}
+							if rfar1.X < rnear.X {
+								panic("Bad cascade")
+							}
+							if rfar1.Y > rnear.Y {
+								panic("Bad cascade")
+							}
+						*/
+						var sBiLinear CascadeIntervalResult
+						sBiLinear = BiLinear(primitives.Vec2{X: float64(0.25) + 0.5*float64(x&1), Y: float64(0.25) + 0.5*float64(y&1)}, si0, si1, si2, si3)
+
+						siNear.mergeIntervals(&sBiLinear)
+					}
+					s.Add(&siNear)
+				}
+				s.Mul(factor)
+				ciRNear.cascade[x][y][k] = s
+			}
+		}
+	}
+
+}
+
+func (rc *RadianceCascadeVanilla) Render() {
 	rc.s.Clear()
 
 	for c := rc.cc.NCascades - 1; c >= 0; c-- {
-		ciNear := rc.cc.cascadeInfo[c]
-		ciRNear := rc.cascadeResult[c]
-
-		ciFar := rc.cc.cascadeInfo[c+1]
-		ciRFar := rc.cascadeResult[c+1]
-
-		factor := float64(ciNear.dirCount) / float64(ciFar.dirCount) // integration factor
-		nDirMerge := ciFar.dirCount / ciNear.dirCount                // number of directions to merge
-		for x := 0; x < ciNear.N; x++ {
-			for y := 0; y < ciNear.M; y++ {
-				for k := 0; k < ciNear.dirCount; k++ {
-					s := CascadeIntervalResult{}
-					siNearTemp := rc.Radiance(c, x, y, k)
-					for kk := 0; kk < nDirMerge; kk++ {
-						siNear := siNearTemp // copy radiance
-						if c != rc.cc.NCascades-1 {
-							d := 4*k + kk // direction index in the next cascade
-							si0 := ciRFar.cascade[(x>>1)+0][(y>>1)+0][d]
-							si1 := ciRFar.cascade[(x>>1)+1][(y>>1)+0][d]
-							si2 := ciRFar.cascade[(x>>1)+0][(y>>1)+1][d]
-							si3 := ciRFar.cascade[(x>>1)+1][(y>>1)+1][d]
-							var sBiLinear CascadeIntervalResult
-							sBiLinear = BiLinear(primitives.Vec2{X: float64(0.33333) + 0.333333*float64(x&1), Y: float64(0.33333) + 0.333333*float64(y&1)}, si0, si1, si2, si3)
-
-							siNear.mergeIntervals(&sBiLinear)
-						}
-						s.Add(&siNear)
-					}
-					s.Mul(factor)
-					ciRNear.cascade[x][y][k] = s
-				}
-			}
-		}
+		rc.Cascade(c)
 	}
 	/*
 		{
@@ -184,5 +207,4 @@ func (rc *RadianceCascadeVanilla) Render() *primitives.SampledImage {
 		}
 	*/
 	rc.MergeOnImage()
-	return rc.s
 }

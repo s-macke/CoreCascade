@@ -7,7 +7,7 @@ import (
 )
 
 func PlotSignedDistance() {
-	scene := NewScene("shadows")
+	scene := NewScene("shadows", 0.)
 	for x := -2.0; x <= 2.0; x += 0.1 {
 		for y := -2.0; y <= 2.0; y += 0.1 {
 			d, _ := scene.SignedDistance(primitives.Vec2{X: x, Y: y})
@@ -19,16 +19,16 @@ func PlotSignedDistance() {
 }
 
 func PlotCascade() {
-	f, err := os.Create("plots/plot.data")
+	f, err := os.Create("plots/probes.data")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
 
-	const WIDTH, HEIGHT = 4, 4
+	const WIDTH, HEIGHT = 8, 8
 	cc := NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
-	for c := 0; c < 3; c++ {
+	for c := 0; c < cc.NCascades; c++ {
 		ci := cc.cascadeInfo[c]
 		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
 		for i := 0; i < ci.N; i++ {

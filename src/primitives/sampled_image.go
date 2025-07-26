@@ -4,6 +4,7 @@ import (
 	"CoreCascade/filebuffer"
 	"fmt"
 	"image"
+	"image/jpeg"
 	"image/png"
 	"os"
 )
@@ -108,7 +109,7 @@ func (s *SampledImage) Energy() float64 {
 	return energy
 }
 
-func (s *SampledImage) StoreImage(filename string) {
+func (s *SampledImage) StorePNG(filename string) {
 	img := s.ToImage()
 	outFile, err := os.Create(filename)
 	if err != nil {
@@ -118,6 +119,23 @@ func (s *SampledImage) StoreImage(filename string) {
 	defer outFile.Close()
 
 	err = png.Encode(outFile, img)
+	if err != nil {
+		fmt.Println("Error saving image:", err)
+	} else {
+		fmt.Println("Image saved as ", filename)
+	}
+}
+
+func (s *SampledImage) StoreJPEG(filename string) {
+	img := s.ToImage()
+	outFile, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("Error saving image:", err)
+		return
+	}
+	defer outFile.Close()
+
+	err = jpeg.Encode(outFile, img, nil)
 	if err != nil {
 		fmt.Println("Error saving image:", err)
 	} else {
@@ -144,7 +162,8 @@ func (s *SampledImage) StoreRaw(filename string) {
 
 func (s *SampledImage) Store(filename string) {
 	s.StoreRaw(filename + ".raw")
-	s.StoreImage(filename + ".png")
+	s.StorePNG(filename + ".png")
+	//s.StoreJPEG(filename + ".jpg")
 }
 
 func (s *SampledImage) Error(img *SampledImage) {

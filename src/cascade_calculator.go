@@ -56,8 +56,8 @@ func NewCascadeCalculator(width, height int) *CascadeCalculator {
 	cc.PROBE_SPACING_MULTIPLIER = 2.0
 
 	cc.cellSizeC0 = sceneWidth / float64(width) // from -1 to 1 in normalized device coordinates, so cell size is 2/width.
-	//lengthC0 := cc.cellSizeC0 * 0.5
-	lengthC0 := cc.cellSizeC0 * 1.0
+	lengthC0 := cc.cellSizeC0 * 0.5
+	//lengthC0 := cc.cellSizeC0 * 1.0
 
 	// determine the number of cascades based on the scene width and the length of the first cascade.
 	iFloat := math.Log(sceneDiagonal/lengthC0) / math.Log(cc.RAY_INTERVAL_LENGTH_MULTIPLIER)

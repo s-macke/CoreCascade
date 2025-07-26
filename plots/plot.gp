@@ -1,7 +1,9 @@
 
 set terminal pngcairo size 2048,2048 enhanced font 'Verdana,40'
+
+###
+
 set output 'plot3.png'
-#unset key
 unset colorbox
 set size ratio -1
 #set samples 17    # x-axis
@@ -16,20 +18,6 @@ plot            \
 "plot3.data" u 1:2:3:4 every :::2::2 w vectors lw 2 title "cascade 2", \
 "plot3.data" u 1:2:3:4 every :::3::3 w vectors lw 2 title "cascade 3"
 
-
-###
-
-set output 'plot.png'
-unset key
-unset colorbox
-set size ratio -1
-#set samples 17    # x-axis
-#set isosamples 15 # y-axis
-
-plot            \
-"plot.data" u 1:2:3:4 every :::0::0 w vectors lw 2, \
-"plot.data" u 1:2:3:4 every :::1::1 w vectors lw 2,  \
-"plot.data" u 1:2:3:4 every :::2::2 w vectors lw 2
 
 ###
 

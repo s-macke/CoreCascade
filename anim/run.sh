@@ -1,0 +1,1 @@
+magick *.png movie.gif
