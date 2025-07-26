@@ -1,6 +1,6 @@
 set -e
 
-gnuplot plot.gp
+gnuplot probe_center.gp
 gnuplot probes.gp
 
-convert -delay 100 -loop 0 probes*.png movie.gif
+convert -delay 100 -loop 0 probes*.png ../assets/probes.gif

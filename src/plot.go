@@ -2,6 +2,7 @@ package main
 
 import (
 	"CoreCascade/primitives"
+	"CoreCascade/render/vanilla_rc"
 	"fmt"
 	"os"
 )
@@ -26,16 +27,16 @@ func PlotCascade() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 8, 8
-	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < cc.NCascades; c++ {
-		ci := cc.cascadeInfo[c]
-		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
+		ci := cc.CascadeInfo[c]
+		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.DirCount, "N", ci.N, "tStart", ci.TStart, "tEnd", ci.TEnd)
 		for i := 0; i < ci.N; i++ {
 			for j := 0; j < ci.M; j++ {
-				for k := 0; k < ci.dirCount; k++ {
-					probe := cc.GetProbe(c, i, j, k)
-					fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+				for k := 0; k < ci.DirCount; k++ {
+					probe := ci.GetProbe(i, j, k)
+					fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 				}
 			}
 		}
@@ -51,13 +52,13 @@ func PlotCascade2() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 800, 800
-	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
 
 	k := 0
 	for i := 0; i < 4; i++ {
 		for j := 0; j < 4; j++ {
-			probe := cc.GetProbe(0, i, j, k)
-			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+			probe := cc.CascadeInfo[0].GetProbe(i, j, k)
+			fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 		}
 	}
 	fmt.Fprintln(f)
@@ -66,8 +67,8 @@ func PlotCascade2() {
 		for j := 0; j < 2; j++ {
 			for kk := 0; kk < 4; kk++ {
 				d := 4*k + kk
-				probe := cc.GetProbe(1, i, j, d)
-				fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+				probe := cc.CascadeInfo[1].GetProbe(i, j, d)
+				fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 			}
 		}
 	}
@@ -77,8 +78,8 @@ func PlotCascade2() {
 		for j := 0; j < 2; j++ {
 			for kk := 0; kk < 4; kk++ {
 				d := 4*k + kk
-				probe := cc.GetProbe(2, i, j, d)
-				fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+				probe := cc.CascadeInfo[2].GetProbe(i, j, d)
+				fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 			}
 
 		}
@@ -95,26 +96,26 @@ func PlotCascade3() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 6, 6
-	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < 4; c++ {
-		ci := cc.cascadeInfo[c]
-		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
+		ci := cc.CascadeInfo[c]
+		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.DirCount, "N", ci.N, "tStart", ci.TStart, "tEnd", ci.TEnd)
 		if c == 0 {
 			for i := 0; i < ci.N; i++ {
 				for j := 0; j < ci.M; j++ {
-					for k := 0; k < ci.dirCount; k++ {
-						probe := cc.GetProbe(c, i, j, k)
-						fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+					for k := 0; k < ci.DirCount; k++ {
+						probe := ci.GetProbe(i, j, k)
+						fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 					}
 				}
 			}
 		} else {
 			for i := 0; i < ci.N; i++ {
 				for j := 0; j < ci.M; j++ {
-					for k := 0; k < ci.dirCount; k++ {
-						probe := cc.GetProbe(c, i, j, k)
-						fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+					for k := 0; k < ci.DirCount; k++ {
+						probe := ci.GetProbe(i, j, k)
+						fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 					}
 				}
 			}
@@ -123,22 +124,22 @@ func PlotCascade3() {
 	}
 }
 
-func PlotCascade4() {
-	f, err := os.Create("plots/plot4.data")
+func PlotProbeCenter() {
+	f, err := os.Create("plots/probe_center.data")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 32, 32
-	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < cc.NCascades; c++ {
-		ci := cc.cascadeInfo[c]
-		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
+		ci := cc.CascadeInfo[c]
+		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.DirCount, "N", ci.N, "tStart", ci.TStart, "tEnd", ci.TEnd)
 		for i := 0; i < ci.N; i++ {
 			for j := 0; j < ci.M; j++ {
-				for k := 0; k < ci.dirCount; k++ {
+				for k := 0; k < ci.DirCount; k++ {
 					probe := cc.GetProbeCenter(c, i, j)
 					fmt.Fprintf(f, "%f %f\n", probe.X, probe.Y)
 				}
@@ -156,16 +157,16 @@ func PlotCascade5() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 256, 256
-	cc := NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < cc.NCascades; c++ {
-		ci := cc.cascadeInfo[c]
-		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.dirCount, "N", ci.N, "tStart", ci.tStart, "tEnd", ci.tEnd)
+		ci := cc.CascadeInfo[c]
+		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.DirCount, "N", ci.N, "tStart", ci.TStart, "tEnd", ci.TEnd)
 		probeCenter := cc.GetProbeCenter(c, 0, 0)
-		for k := 0; k < ci.dirCount; k++ {
-			probe := cc.GetProbe(c, 0, 0, k)
-			probe.ray.P.Sub(probeCenter)
-			fmt.Fprintf(f, "%f %f %f %f\n", probe.ray.P.X, probe.ray.P.Y, probe.ray.Dir.X*probe.tmax, probe.ray.Dir.Y*probe.tmax)
+		for k := 0; k < ci.DirCount; k++ {
+			probe := ci.GetProbe(0, 0, k)
+			probe.Ray.P.Sub(probeCenter)
+			fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
 		}
 		fmt.Fprintln(f)
 	}

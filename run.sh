@@ -59,8 +59,7 @@ rm assets/vanilla_beam.raw
 (cd src && go build -o ../CoreCascade)
 
 #path_tracing_batch
-#vanilla_radiance_cascade_batch
+vanilla_radiance_cascade_batch
+#./CoreCascade -method plot
 #rotate_batch
-
-./CoreCascade -method plot
 

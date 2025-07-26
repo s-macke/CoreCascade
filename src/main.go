@@ -2,6 +2,8 @@ package main
 
 import (
 	"CoreCascade/primitives"
+	"CoreCascade/render/path_tracing"
+	"CoreCascade/render/vanilla_rc"
 	"CoreCascade/scene"
 	"fmt"
 	"strings"
@@ -39,30 +41,31 @@ func main() {
 
 	switch config.Method {
 	case "path_tracing":
-		RenderPathTracing(sc, image)
+		path_tracing.RenderPathTracing(sc, image)
+		image.Store(config.OutputFilename)
 	case "path_tracing_parallel":
-		RenderPathTracingParallel(sc, image, 2)
+		path_tracing.RenderPathTracingParallel(sc, image, 2)
+		image.Store(config.OutputFilename)
 	case "vanilla_radiance_cascade":
-		NewRadianceCascadeVanilla(sc, image).Render()
+		vanilla_rc.NewRadianceCascadeVanilla(sc, image).Render()
+		image.Store(config.OutputFilename)
+	case "error":
+		//truth := NewSampledImageFromFile("ring_shadow.raw")
+		//truth.Error(img)
+		//truth.StorePNG("diff.png")
 	case "plot":
 		PlotCascade()
-		return
-	/*
-		PlotSignedDistance()
-		PlotCascade2()
-		PlotCascade3()
-		PlotCascade4()
-		PlotCascade5()
-	*/
-	//PlotEnergy(img)
+		PlotProbeCenter()
+		/*
+			PlotSignedDistance()
+			PlotCascade2()
+			PlotCascade3()
+			PlotCascade4()
+			PlotCascade5()
+			PlotEnergy(img)
+		*/
 
 	default:
 		panic("Unknown method")
 	}
-
-	image.Store(config.OutputFilename)
-
-	//truth := NewSampledImageFromFile("ring_shadow.raw")
-	//truth.Error(img)
-	//truth.StorePNG("diff.png")
 }

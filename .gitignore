@@ -1,0 +1,7 @@
+CoreCascade
+/*.png
+plots/*.png
+*.data
+*.raw
+
+CLAUDE.md
