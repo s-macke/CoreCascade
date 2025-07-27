@@ -3,7 +3,7 @@ package main
 import (
 	"CoreCascade/primitives"
 	"CoreCascade/render/path_tracing"
-	"CoreCascade/render/vanilla_rc"
+	"CoreCascade/render/radiance_cascade"
 	"CoreCascade/scene"
 	"fmt"
 	"strings"
@@ -28,8 +28,8 @@ func NewScene(sceneAsString string, time float64) *scene.Scene {
 
 func main() {
 	config := parseConfig()
-	fmt.Printf("Size: %dx%d\n", config.Width, config.Height)
 	fmt.Printf("Scene: %s\n", config.Scene)
+	fmt.Printf("Size: %dx%d\n", config.Width, config.Height)
 	sc := NewScene(config.Scene, config.Time)
 
 	var image *primitives.SampledImage
@@ -47,7 +47,10 @@ func main() {
 		path_tracing.RenderPathTracingParallel(sc, image, 2)
 		image.Store(config.OutputFilename)
 	case "vanilla_radiance_cascade":
-		vanilla_rc.NewRadianceCascadeVanilla(sc, image).Render()
+		radiance_cascade.NewRadianceCascade(sc, image, false).Render()
+		image.Store(config.OutputFilename)
+	case "bilinear_fix_radiance_cascade":
+		radiance_cascade.NewRadianceCascade(sc, image, true).Render()
 		image.Store(config.OutputFilename)
 	case "error":
 		//truth := NewSampledImageFromFile("ring_shadow.raw")
@@ -56,6 +59,7 @@ func main() {
 	case "plot":
 		PlotCascade()
 		PlotProbeCenter()
+		PlotProbeCascadesNonSpatial()
 		/*
 			PlotSignedDistance()
 			PlotCascade2()

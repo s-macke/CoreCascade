@@ -2,7 +2,7 @@ package main
 
 import (
 	"CoreCascade/primitives"
-	"CoreCascade/render/vanilla_rc"
+	"CoreCascade/render/radiance_cascade"
 	"fmt"
 	"os"
 )
@@ -27,7 +27,7 @@ func PlotCascade() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 8, 8
-	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < cc.NCascades; c++ {
 		ci := cc.CascadeInfo[c]
@@ -52,7 +52,7 @@ func PlotCascade2() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 800, 800
-	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
 
 	k := 0
 	for i := 0; i < 4; i++ {
@@ -96,7 +96,7 @@ func PlotCascade3() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 6, 6
-	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < 4; c++ {
 		ci := cc.CascadeInfo[c]
@@ -132,7 +132,7 @@ func PlotProbeCenter() {
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 32, 32
-	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < cc.NCascades; c++ {
 		ci := cc.CascadeInfo[c]
@@ -140,7 +140,7 @@ func PlotProbeCenter() {
 		for i := 0; i < ci.N; i++ {
 			for j := 0; j < ci.M; j++ {
 				for k := 0; k < ci.DirCount; k++ {
-					probe := cc.GetProbeCenter(c, i, j)
+					probe := ci.GetProbeCenter(i, j)
 					fmt.Fprintf(f, "%f %f\n", probe.X, probe.Y)
 				}
 			}
@@ -149,20 +149,20 @@ func PlotProbeCenter() {
 	}
 }
 
-func PlotCascade5() {
-	f, err := os.Create("plots/plot5.data")
+func PlotProbeCascadesNonSpatial() {
+	f, err := os.Create("plots/probe_cascades_non_spatial.data")
 	if err != nil {
 		panic(err)
 	}
 	defer f.Close()
 
 	const WIDTH, HEIGHT = 256, 256
-	cc := vanilla_rc.NewCascadeCalculator(WIDTH, HEIGHT)
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
 	fmt.Fprintln(f, "# NCascades", cc.NCascades)
 	for c := 0; c < cc.NCascades; c++ {
 		ci := cc.CascadeInfo[c]
 		fmt.Fprintln(f, "# Cascade", c, "total", ci.Total(), "dirCount", ci.DirCount, "N", ci.N, "tStart", ci.TStart, "tEnd", ci.TEnd)
-		probeCenter := cc.GetProbeCenter(c, 0, 0)
+		probeCenter := ci.GetProbeCenter(0, 0)
 		for k := 0; k < ci.DirCount; k++ {
 			probe := ci.GetProbe(0, 0, k)
 			probe.Ray.P.Sub(probeCenter)

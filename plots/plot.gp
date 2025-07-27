@@ -36,17 +36,6 @@ plot [-1.005:-0.98] [-1.005:-0.98]          \
 
 ###
 
-unset arrow
-
-set output 'plot5.png'
-#unset key
-unset colorbox
-set size ratio -1
-
-plot [:] [:]          \
-"plot5.data" u 1:2:3:4 every :::0::0 w vectors lw 10 title "cascade 0", \
-"plot5.data" u 1:2:3:4 every :::1::1 w vectors lw 10 title "cascade 1", \
-"plot5.data" u 1:2:3:4 every :::2::2 w vectors lw 10 title "cascade 2"
 
 ###
 

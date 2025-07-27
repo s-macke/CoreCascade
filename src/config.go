@@ -21,7 +21,7 @@ func parseConfig() (config flagConfig) {
 	flag.StringVar(&config.InputFilename, "input", "", "Input raw file")
 	flag.StringVar(&config.Scene, "scene", "shadows", "Scene to render (e.g., center, pinhole, penumbra, shadows, beam)")
 	flag.Float64Var(&config.Time, "time", 0.0, "Time of the scene")
-	flag.StringVar(&config.Method, "method", "vanilla_radiance_cascade", "Rendering method to use (e.g., path_tracing, path_tracing_parallel, vanilla_radiance_cascade)")
+	flag.StringVar(&config.Method, "method", "vanilla_radiance_cascade", "Rendering method to use (e.g., path_tracing, path_tracing_parallel, vanilla_radiance_cascade, bilinear_fix_radiance_cascade)")
 	flag.Parse()
 	return
 }

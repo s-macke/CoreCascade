@@ -56,10 +56,36 @@ rm assets/vanilla_beam.raw
 
 }
 
+bilinear_fix_radiance_cascade_batch () {
+
+echo "=== Bilinear Fix Penumbra ==="
+./CoreCascade -scene penumbra -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_penumbra
+rm assets/bilinear_fix_penumbra.raw
+
+echo "=== Bilinear Fix Center ==="
+./CoreCascade -scene center -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_center
+rm assets/bilinear_fix_center.raw
+
+echo "=== Bilinear Fix Pinhole ==="
+./CoreCascade -scene pinhole -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_pinhole
+rm assets/bilinear_fix_pinhole.raw
+
+echo "=== Bilinear Fix Shadows ==="
+./CoreCascade -scene shadows -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_shadows
+rm assets/bilinear_fix_shadows.raw
+
+echo "=== Bilinear Fix Beam ==="
+./CoreCascade -scene beam -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_beam
+rm assets/bilinear_fix_beam.raw
+
+}
+
+
 (cd src && go build -o ../CoreCascade)
 
 #path_tracing_batch
 vanilla_radiance_cascade_batch
+#bilinear_fix_radiance_cascade_batch
 #./CoreCascade -method plot
 #rotate_batch
 

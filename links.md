@@ -113,12 +113,13 @@ DDA - Digital Differential Analyzer
 
 # Improvements
 - Bilinear fix
-- Gear fix
-- nearest fix
-- Forking fix
-- pre-averaging
-- mipmapping
 - Holographic
+- Mip-mapping
+- Pre-averaging optimization
+- Gear fix
+- Nearest fix
+- Forking fix
+- Parallax fix
 
 # RMSE
 sqrt( (1/N) * sum( (I - I')^2 ) )

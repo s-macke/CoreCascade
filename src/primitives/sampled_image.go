@@ -90,7 +90,7 @@ func (s *SampledImage) ToImage() *image.RGBA {
 			p := s.pixels[y][x]
 			c := p.Color
 			c.Div(float64(p.Samples))
-			img.Set(x, y, c.ToSRGBA())
+			img.Set(x, y, c.ToSRGBAReinhard())
 		}
 	}
 	return img

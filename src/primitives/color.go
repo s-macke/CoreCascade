@@ -175,7 +175,8 @@ func linearToSRGB(x float64) float64 {
 	return 1.055*math.Pow(x, 1/2.4) - 0.055
 }
 
-func (c *Color) ToSRGBA() color.RGBA {
+// only Gamma correction
+func (c *Color) ToSRGBAOnlyGamma() color.RGBA {
 	newcol := Color{
 		R: math.Pow(c.R, 1.0/2.2),
 		G: math.Pow(c.G, 1.0/2.2),
@@ -186,6 +187,37 @@ func (c *Color) ToSRGBA() color.RGBA {
 		R: uint8(clamp(newcol.R*255, 0, 255)),
 		G: uint8(clamp(newcol.G*255, 0, 255)),
 		B: uint8(clamp(newcol.B*255, 0, 255)),
+		A: 255,
+	}
+}
+
+// https://64.github.io/tonemapping/
+func (c *Color) ToSRGBAReinhard() color.RGBA {
+	newcol := Color{
+		R: math.Pow(c.R/(c.R+1.), 1.0/2.2),
+		G: math.Pow(c.G/(c.G+1.), 1.0/2.2),
+		B: math.Pow(c.B/(c.B+1.), 1.0/2.2),
+	}
+
+	return color.RGBA{
+		R: uint8(newcol.R * 255),
+		G: uint8(newcol.G * 255),
+		B: uint8(newcol.B * 255),
+		A: 255,
+	}
+}
+
+func (c *Color) ToSRGBAFilmic() color.RGBA {
+	newcol := Color{
+		R: 1. - 1./math.Pow(1.+c.R, 2.2),
+		G: 1. - 1./math.Pow(1.+c.G, 2.2),
+		B: 1. - 1./math.Pow(1.+c.B, 2.2),
+	}
+
+	return color.RGBA{
+		R: uint8(newcol.R * 255),
+		G: uint8(newcol.G * 255),
+		B: uint8(newcol.B * 255),
 		A: 255,
 	}
 }

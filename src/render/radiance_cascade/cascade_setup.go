@@ -1,4 +1,4 @@
-package vanilla_rc
+package radiance_cascade
 
 import (
 	"CoreCascade/primitives"
@@ -33,6 +33,7 @@ type CascadeCalculator struct {
 	lengthC0                       float64 // Length of the first Ray in cascade 0.
 	RAY_INTERVAL_LENGTH_MULTIPLIER float64 // Multiplier for Ray interval length in cascades.
 	PROBE_SPACING_MULTIPLIER       float64
+	IntervalOverlap                float64
 
 	CascadeInfo []CascadeInfo
 }
@@ -51,6 +52,7 @@ func NewCascadeCalculator(width, height int) *CascadeCalculator {
 	cc.dirCountC0 = 4 // Initial number of directions in the first cascade.
 	cc.dirCountMultiplier = 4
 	cc.RAY_INTERVAL_LENGTH_MULTIPLIER = 4.
+	cc.IntervalOverlap = 1.0 // 1.0 = non-overlap, 1.1= 10% overlap
 
 	cc.PROBE_SPACING_MULTIPLIER = 2.
 
@@ -96,7 +98,7 @@ func NewCascadeCalculator(width, height int) *CascadeCalculator {
 				Y: cc.CascadeInfo[i-1].p0.Y - 0.25*cc.CascadeInfo[i].spacing,
 			}
 		}
-		cc.CascadeInfo[i].TEnd = cc.lengthC0 * math.Pow(cc.RAY_INTERVAL_LENGTH_MULTIPLIER, float64(i))
+		cc.CascadeInfo[i].TEnd = cc.lengthC0 * math.Pow(cc.RAY_INTERVAL_LENGTH_MULTIPLIER, float64(i)) * cc.IntervalOverlap
 	}
 
 	return cc
@@ -120,19 +122,22 @@ type CascadeProbe struct {
 func (ci *CascadeInfo) GetProbe(i int, j int, index int) CascadeProbe {
 	angle := ci.angleStart + ci.deltaAngle*float64(index)
 	dir := primitives.NewVec2fromAngle(angle)
+
+	tstart := ci.TStart
+	tend := ci.TEnd
+
 	ray := primitives.Ray{P: primitives.Vec2{
-		ci.p0.X + float64(i)*ci.spacing + dir.X*ci.TStart,
-		ci.p0.Y + float64(j)*ci.spacing + dir.Y*ci.TStart},
+		ci.p0.X + float64(i)*ci.spacing + dir.X*tstart,
+		ci.p0.Y + float64(j)*ci.spacing + dir.Y*tstart},
 		Dir: dir}
 
 	return CascadeProbe{
 		Ray:  ray,
-		Tmax: ci.TEnd - ci.TStart, // Maximum distance for the Ray to travel.
+		Tmax: tend - tstart, // Maximum distance for the Ray to travel.
 	}
 }
 
-func (cc *CascadeCalculator) GetProbeCenter(cascade int, i int, j int) primitives.Vec2 {
-	ci := cc.CascadeInfo[cascade]
+func (ci *CascadeInfo) GetProbeCenter(i int, j int) primitives.Vec2 {
 	p := primitives.Vec2{
 		ci.p0.X + float64(i)*ci.spacing,
 		ci.p0.Y + float64(j)*ci.spacing,

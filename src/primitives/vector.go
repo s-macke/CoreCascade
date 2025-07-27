@@ -17,6 +17,14 @@ func (v *Vec2) Length() float64 {
 	return math.Hypot(v.X, v.Y)
 }
 
+func (v *Vec2) Normalize() float64 {
+	l := v.Length()
+	v.X /= l
+	v.Y /= l
+	return l
+
+}
+
 func (v *Vec2) Add(w Vec2) {
 	v.X += w.X
 	v.Y += w.Y

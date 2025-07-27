@@ -3,8 +3,10 @@ set -e
 
 combine_images () {
 magick convert vanilla_${1}.png -gravity North -pointsize 30 -font helvetica -fill white -annotate +0+10 'Vanilla Radiance Cascade' -background black -gravity East -splice 20x0 vanilla_${1}2.png
+magick convert bilinear_fix_${1}.png -gravity North -pointsize 30 -font helvetica -fill white -annotate +0+10 'Bilinear Fix Radiance Cascade' -background black -gravity East -splice 20x0 bilinear_fix_${1}2.png
 magick convert path_tracing_${1}.png -gravity North -pointsize 30 -font helvetica -fill white -annotate +0+10 'Reference' path_tracing_${1}2.png
-magick convert +append vanilla_${1}2.png path_tracing_${1}2.png ${1}.jpg
+magick convert +append vanilla_${1}2.png bilinear_fix_${1}2.png path_tracing_${1}2.png ${1}.jpg
+rm vanilla_${1}2.png bilinear_fix_${1}2.png
 }
 
 combine_images "beam"
