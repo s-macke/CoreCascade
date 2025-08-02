@@ -23,12 +23,12 @@ Here is a short overview of the technique.
 
 Path tracing is a Monte Carlo ray-tracing technique that fires many random rays from a probe position into a scene to simulate the way light interacts with surfaces. Each ray traces a path through the scene, bouncing off surfaces and gathering color information. 
 
-![path_tracing_cascade0.png](plots/path_tracing_cascade0.png)
+![path_tracing_cascade0.png](assets/path_tracing_cascade0.png)
 
 The final probe color is produced by averaging the contributions of all these rays.
 In 2D, these probes are points in the scene arranged on a grid, and rays are cast from these points into the scene.
 
-![path_tracing_spatial_probes.png](plots/path_tracing_spatial_probes.png)
+![path_tracing_spatial_probes.png](assets/path_tracing_spatial_probes.png)
 
 In the trivial case, each probe sits in the center of a pixel, resulting in several million probes per image. This method is simple but noisy due to its stochastic nature and can be slow to converge. 
 
