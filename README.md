@@ -4,100 +4,97 @@
 
 A 2D implementation of the Radiance Cascades global illumination technique in Go. This project serves as an experimental platform for understanding and exploring the Radiance Cascades algorithm in a simplified 2D environment.
 
-Its benefits include:
+## Overview
 
-* No noise
+Radiance Cascades is a hierarchical probe-based global illumination technique that efficiently computes lighting by using multiple resolution levels (cascades). 
+A good tutorial on the technique can be found [here](https://m4xc.dev/articles/fundamental-rc/).
+
+The benefits of Radiance Cascades include:
+
+* No noise in the final image
 * Good convergence against satisfying results
-* Scales independent of number of light sources 
+* Scales independent of number of light sources
 * Efficiently captures global illumination
 * Does run in real-time if implemented on a GPU
 
-## Overview
-
-Radiance Cascades is a hierarchical probe-based global illumination technique that efficiently computes indirect lighting by using multiple resolution levels (cascades). 
-A good tutorial on the technique can be found [here](https://m4xc.dev/articles/fundamental-rc/).
 Here is a short overview of the technique.
 
 ## Path Tracing in 2D
 
-Path tracing is a Monte Carlo ray-tracing technique that fires many random rays from a probe position into a scene 
-to simulate the way light interacts with surfaces. Each ray traces a path through the scene, bouncing off surfaces and 
-gathering color information. 
+Path tracing is a Monte Carlo ray-tracing technique that fires many random rays from a probe position into a scene to simulate the way light interacts with surfaces. Each ray traces a path through the scene, bouncing off surfaces and gathering color information. 
 
 ![path_tracing_cascade0.png](plots/path_tracing_cascade0.png)
 
 The final probe color is produced by averaging the contributions of all these rays.
-In 2D those probes are just points in the scene ordered on a grid and the rays are casted from these points into the scene.
+In 2D, these probes are points in the scene arranged on a grid, and rays are cast from these points into the scene.
 
 ![path_tracing_spatial_probes.png](plots/path_tracing_spatial_probes.png)
 
-In the trivial case, each probe sits in the center of a pixel. So, having several million probes per image. 
-This method is simple, but due to the stochastic nature noisy and can be slow to converge. 
+In the trivial case, each probe sits in the center of a pixel, resulting in several million probes per image. This method is simple but noisy due to its stochastic nature and can be slow to converge. 
 
-## Penumbra Condition (Soft Shadows Condition)
+### Penumbra Condition (Soft Shadows)
 
-The centerpiece of Radiance Cascade is to exploit certain geometric properties of light tracing.
+The core insight of Radiance Cascades is exploiting certain geometric properties of light transport:
 
-![penunmbra_annotated.png](assets/penunmbra_annotated.png)
+![penumbra_annotated.png](assets/penumbra_annotated.png)
 
 * We need **less** angular resolution next to the light source
-* We need **more** spatial resolution next to the light source.
+* We need **more** spatial resolution next to the light source
 
-# Angular Component
-We discretize the angular space dependent on the distance to the light probe.
+### Angular Component
 
-- In our example each cascade level has:
+We discretize the angular space based on the distance to the light probe.
+
+In our example, each cascade level has:
   - 4x more angular directions
   - 2x longer ray intervals
 
 ![cascades_non_spatial.png](assets/cascades_non_spatial.png)
 
-# Spatial Component
+### Spatial Component
 
-Instead of probing all cascades at the same position, we use a hierarchical grid of probes that are placed at different spatial resolutions.
+Instead of probing all cascades at the same position, we use a hierarchical grid of probes placed at different spatial resolutions.
 
-- Each cascade level has around:
-  - 2x less probes and hence less spatial resolution
-  - is displaced to the center of the previous cascade level
+Each cascade level has approximately:
+  - 2x fewer probes and hence lower spatial resolution
+  - Probes displaced to the center of the previous cascade level
 
-This image shows the center of each probe of each cascade level
-- ![probe_center.png](assets/probe_center.png)
+This image shows the center of each probe at each cascade level:
 
-Cascade 0 depicts the probes with the highest spatial resolution and usually are placed at the center of each pixel.
+![probe_center.png](assets/probe_center.png)
 
-Some of the spatial probes of the higher cascades are outside of the image and must be handled as well.
-The reason for this is, that we perform a bilinear interpolation between the probes of the different cascades.
-E. g. the result of the probe tracing of cascade i+1 is bilinearly interpolated to the positions of the probes of cascade i.
-However, most of the implementation set the probe trace result to zero (black color), which seems to be sufficient for most cases.
+Cascade 0 depicts the probes with the highest spatial resolution, typically placed at the center of each pixel.
 
-# Angular and Spatial Probes
+Some spatial probes of the higher cascades fall outside the image boundaries and must be handled appropriately. This occurs because we perform bilinear interpolation between probes of different cascades. For example, the result of probe tracing from cascade i+1 is bilinearly interpolated to the positions of probes in cascade i. Most implementations set the probe trace result to zero (black color) for out-of-bounds probes, which is typically sufficient.
 
-We end up with a hierarchical grid of "probes" at multiple resolutions.
+### Combined Angular and Spatial Probes
+
+The result is a hierarchical grid of "probes" at multiple resolutions:
+
 ![probes.gif](assets/probes.gif)
 
-## Merging
+### Merging Cascades
 
-With bilinear interpolation the trace information of cascade i+1 is estimated at the probe of cascade i.
-![marge_vanilla.gif](assets/merge_vanilla.gif)
+Bilinear interpolation is used to estimate the trace information from cascade i+1 at the probe positions of cascade i:
 
-# Bilinear Fix
+![merge_vanilla.gif](assets/merge_vanilla.gif)
 
-The vanilla version has several issues such as ringing and light leaking. 
-So, currently several ideas are being tested to improve the overall quality of the rendering.
-One of the most prominent is called bilinear fix, but requires four times more rays to be casted.
-If traces the rays from their usual start position in cascade i to the start position of the child rays 
-in cascade i+1 for each of the four probes. 
+### Bilinear Fix
 
-To make it easier to visualize, only the rays from cascade 0 contain the bilinear fix, while the rays from cascade 1 are the same as in the vanilla version.
+The vanilla version has several issues such as ringing and light leaking. Currently, several improvements are being tested to enhance the overall rendering quality. One of the most prominent is the "bilinear fix," which requires casting four times more rays. It traces rays from their usual start position in cascade i to the start position of the child rays in cascade i+1 for each of the four probes. 
+
+For visualization purposes, only the rays from cascade 0 include the bilinear fix, while the rays from cascade 1 remain the same as in the vanilla version:
+
 ![merge_bilinear_fix.gif](assets/merge_bilinear_fix.gif)
 
-While I am not sure, how the bilinear fix works, the results are much better than the vanilla version.
+The bilinear fix significantly improves the results compared to the vanilla version.
 
-# Results
-Comparison between different rendering methods in the same scene.
+## Results
+
+Comparison between different rendering methods in the same scene:
 
 ![Center Circle](/assets/center.webp)
-![Penunbra](/assets/penumbra.webp)
+![Penumbra](/assets/penumbra.webp)
 ![Color Pinhole](/assets/pinhole.webp)
 ![Shadows](/assets/shadows.webp)
 ![Long Pinhole](/assets/beam.webp)
@@ -108,7 +105,7 @@ Comparison between different rendering methods in the same scene.
   - Path tracing
   - Radiance Cascades rendering
   - Light Propagation Volumes
-  - Light Propagation (Under development)
+  - Light Propagation (under development)
 - **SDF-based Scene Representation**: Uses Signed Distance Fields for flexible object representation
 
 ## Getting Started
@@ -117,16 +114,15 @@ Comparison between different rendering methods in the same scene.
 
 Build directly:
 ```bash
-cd src && go build -o ../cascade
+cd src && go build -o ../CoreCascade
 ```
 
 ### Running
 
-To see the options use
+To see available options:
 ```bash
 ./CoreCascade --help
 ```
-
 
 ## Scene Definition
 
