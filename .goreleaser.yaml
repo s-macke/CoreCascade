@@ -3,7 +3,7 @@ project_name: CoreCascade
 version: 2
 
 builds:
-  - main: src/
+  - dir: src
     binary: CoreCascade
     id: CoreCascade
     env:
@@ -30,14 +30,14 @@ archives:
       {{- else }}{{ .Arch }}{{ end }}
     format_overrides:
       - goos: windows
-        format: zip
+        formats: zip
     files:
       - README.md
     wrap_in_directory: true
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ incpatch .Version }}-next"
+  version_template: "{{ incpatch .Version }}-next"
 changelog:
   sort: asc
   filters:
