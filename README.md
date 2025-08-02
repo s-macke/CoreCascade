@@ -99,16 +99,17 @@ Comparison between different rendering methods in the same scene:
 ![Shadows](/assets/shadows.webp)
 ![Long Pinhole](/assets/beam.webp)
 
-## Features
 
-- **Multiple Rendering Methods**:
-  - Path tracing
-  - Radiance Cascades rendering
-  - Light Propagation Volumes
-  - Light Propagation (under development)
-- **SDF-based Scene Representation**: Uses Signed Distance Fields for flexible object representation
 
 ## Getting Started
+
+The Go application supports the following features:
+
+- **Multiple Rendering Methods**:
+  - Monte-Carlo Path tracing
+  - Radiance Cascades rendering (Vanilla and Bilinear Fix)
+  - Light Propagation (under development)
+- **SDF-based Scene Representation**: Uses Signed Distance Fields for flexible object representation
 
 ### Building
 
@@ -123,12 +124,6 @@ To see available options:
 ```bash
 ./CoreCascade --help
 ```
-
-## Scene Definition
-
-Scenes use Signed Distance Fields (SDFs) with the following primitives:
-- **Circle**: Defined by center, radius, and color
-- **Box**: Axis-aligned box with center, dimensions, and color
 
 ## References
 
