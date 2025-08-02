@@ -113,7 +113,7 @@ DDA - Digital Differential Analyzer
 
 # Improvements
 - Bilinear fix
-- Holographic
+- Holographic Radiance Cascades
 - Mip-mapping
 - Pre-averaging optimization
 - Gear fix

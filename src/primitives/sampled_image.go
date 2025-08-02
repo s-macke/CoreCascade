@@ -57,6 +57,36 @@ func NewSampledImageFromFile(filename string) *SampledImage {
 	return s
 }
 
+func NewSampledImageFromJpeg(filename string) *SampledImage {
+	imgFile, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Error opening image file:", err)
+		return nil
+	}
+	defer imgFile.Close()
+
+	img, err := jpeg.Decode(imgFile)
+	if err != nil {
+		fmt.Println("Error decoding JPEG image:", err)
+		return nil
+	}
+
+	bounds := img.Bounds()
+	s := NewSampledImage(bounds.Dx(), bounds.Dy())
+
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			c := img.At(x, y)
+			r, g, b, _ := c.RGBA()
+			col := NewSRGBColor(float64(r)/65535.0, float64(g)/65535.0, float64(b)/65535.0)
+			s.SetColor(x-bounds.Min.X, y-bounds.Min.Y, col)
+		}
+	}
+
+	return s
+
+}
+
 func (s *SampledImage) Clear() {
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
@@ -91,6 +121,7 @@ func (s *SampledImage) ToImage() *image.RGBA {
 			c := p.Color
 			c.Div(float64(p.Samples))
 			img.Set(x, y, c.ToSRGBAReinhard())
+			//img.Set(x, y, c.ToSRGBAOnlyGamma())
 		}
 	}
 	return img
@@ -186,4 +217,21 @@ func (s *SampledImage) Error(img *SampledImage) {
 		}
 	}
 	fmt.Println("Error:", e/float64(s.Width*s.Height))
+}
+
+func (s *SampledImage) Blend(src *SampledImage) {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
+			if x >= src.Width || y >= src.Height {
+				continue // skip pixels that are out of bounds
+			}
+			col := s.GetColor(x, y)
+			colSrc := src.GetColor(x, y)
+			//colSrc := Color{0.5, 0.5, 0.5}
+			colSrc.R *= col.R
+			colSrc.G *= col.G
+			colSrc.B *= col.B
+			s.SetColor(x, y, colSrc)
+		}
+	}
 }

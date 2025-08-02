@@ -16,19 +16,19 @@ done
 path_tracing_batch () {
 
 echo "=== Path Tracing Penumbra ==="
-./CoreCascade -scene penumbra -method path_tracing_parallel -output assets/path_tracing_penumbra
+./CoreCascade -scene penumbra -method path_tracing_parallel -output assets/path_tracing_penumbra -input assets/path_tracing_penumbra.raw
 
 echo "=== Path Tracing Center ==="
-./CoreCascade -scene center -method path_tracing_parallel -output assets/path_tracing_center
+./CoreCascade -scene center -method path_tracing_parallel -output assets/path_tracing_center -input assets/path_tracing_center.raw
 
 echo "=== Path Tracing Pinhole ==="
-./CoreCascade -scene pinhole -method path_tracing_parallel -output assets/path_tracing_pinhole
+./CoreCascade -scene pinhole -method path_tracing_parallel -output assets/path_tracing_pinhole -input assets/path_tracing_pinhole.raw
 
 echo "=== Path Tracing Shadows ==="
-./CoreCascade -scene shadows -method path_tracing_parallel -output assets/path_tracing_shadows
+./CoreCascade -scene shadows -method path_tracing_parallel -output assets/path_tracing_shadows -input assets/path_tracing_shadows.raw
 
 echo "=== Path Tracing Beam ==="
-./CoreCascade -scene beam -method path_tracing_parallel -output assets/path_tracing_beam
+./CoreCascade -scene beam -method path_tracing_parallel -output assets/path_tracing_beam -input assets/path_tracing_beam.raw
 
 }
 
@@ -83,9 +83,13 @@ rm assets/bilinear_fix_beam.raw
 
 (cd src && go build -o ../CoreCascade)
 
-#path_tracing_batch
-vanilla_radiance_cascade_batch
-#bilinear_fix_radiance_cascade_batch
+
+#./CoreCascade -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
+#./CoreCascade -scene title -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_title
+
 #./CoreCascade -method plot
+#path_tracing_batch
+#vanilla_radiance_cascade_batch
+bilinear_fix_radiance_cascade_batch
 #rotate_batch
 

@@ -15,7 +15,6 @@ plot            \
 "plot3.data" u 1:2:3:4 every :::2::2 w vectors lw 2 title "cascade 2", \
 "plot3.data" u 1:2:3:4 every :::3::3 w vectors lw 2 title "cascade 3"
 
-
 ###
 
 unset arrow

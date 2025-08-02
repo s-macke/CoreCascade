@@ -1,6 +1,6 @@
 set terminal pngcairo size 2048,2048 enhanced font 'Verdana,40'
 
-set output '../assets/probe_center.png'
+set output 'probe_center.png'
 set key inside top left vertical maxrows 1 sample 0.1
 set key font ",40"
 unset colorbox

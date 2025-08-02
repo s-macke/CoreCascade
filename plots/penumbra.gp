@@ -1,6 +1,6 @@
 # Set the output terminal and file name
 set terminal pngcairo size 800,800
-set output '../assets/penunmbra_annotated.png'
+set output 'penumbra_annotated.png'
 
 # Remove plot elements like tics, border, and legend
 unset tics

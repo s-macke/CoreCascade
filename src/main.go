@@ -22,6 +22,8 @@ func NewScene(sceneAsString string, time float64) *scene.Scene {
 		return scene.NewScenePenumbra()
 	case "beam":
 		return scene.NewSceneBeam()
+	case "title":
+		return scene.NewSceneTitle(time)
 	}
 	panic("Unknown scene")
 }
@@ -30,10 +32,12 @@ func main() {
 	config := parseConfig()
 	fmt.Printf("Scene: %s\n", config.Scene)
 	fmt.Printf("Size: %dx%d\n", config.Width, config.Height)
+	fmt.Printf("Method: %s\n", config.Method)
 	sc := NewScene(config.Scene, config.Time)
 
 	var image *primitives.SampledImage
 	if config.InputFilename != "" {
+		fmt.Println("Reading image from file", config.InputFilename)
 		image = primitives.NewSampledImageFromFile(config.InputFilename)
 	} else {
 		image = primitives.NewSampledImage(config.Height, config.Width)
@@ -42,34 +46,37 @@ func main() {
 	switch config.Method {
 	case "path_tracing":
 		path_tracing.RenderPathTracing(sc, image)
-		image.Store(config.OutputFilename)
 	case "path_tracing_parallel":
-		path_tracing.RenderPathTracingParallel(sc, image, 2)
-		image.Store(config.OutputFilename)
+		path_tracing.RenderPathTracingParallel(sc, image, 10)
 	case "vanilla_radiance_cascade":
 		radiance_cascade.NewRadianceCascade(sc, image, false).Render()
-		image.Store(config.OutputFilename)
 	case "bilinear_fix_radiance_cascade":
 		radiance_cascade.NewRadianceCascade(sc, image, true).Render()
-		image.Store(config.OutputFilename)
 	case "error":
 		//truth := NewSampledImageFromFile("ring_shadow.raw")
 		//truth.Error(img)
 		//truth.StorePNG("diff.png")
 	case "plot":
 		PlotCascade()
+		PlotCascadeBilinearFix()
 		PlotProbeCenter()
 		PlotProbeCascadesNonSpatial()
+		PlotCascadeBilinearFixSimple()
+		return
 		/*
 			PlotSignedDistance()
 			PlotCascade2()
 			PlotCascade3()
-			PlotCascade4()
-			PlotCascade5()
 			PlotEnergy(img)
 		*/
-
 	default:
 		panic("Unknown method")
 	}
+
+	//img := primitives.NewSampledImageFromJpeg("assets/pexels-fwstudio-33348-129731.jpg")
+	//img := primitives.NewSampledImageFromJpeg("assets/Texture_P7150102.JPG")
+	//image.Blend(img)
+
+	image.Store(config.OutputFilename)
+
 }

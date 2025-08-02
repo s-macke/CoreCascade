@@ -3,7 +3,7 @@ set terminal pngcairo size 2048,2048 enhanced font 'Verdana,40'
 set border lw 4
 
 set output 'cascades_non_spatial.png'
-set title "Radiance Cascades (non-spatial shift)"
+#set title "Radiance Cascades (non-spatial shift)"
 #unset key
 unset colorbox
 set size ratio -1
@@ -27,7 +27,11 @@ plot [-0.1:0.1] [-0.1:0.1]          \
 ###
 
 set output 'path_tracing_cascade0.png'
-set title "Monte Carlo Path Tracing"
+#set title "Monte Carlo Path Tracing"
+unset xtics
+unset ytics
+unset border
+
 
 do for [i=1:75] {
   # Generate a random angle and radius
@@ -44,7 +48,42 @@ do for [i=1:75] {
   set arrow i from 0,0 to x_end,y_end head filled size screen 0.02,15,45 lw 10 lt 1
 }
 
-# --- 4. Plotting ---
-# The 'plot 1/0' command is a trick to create an empty plot,
-# which forces gnuplot to draw all the objects (our arrows) we defined.
 plot [-2:2] [-2:2] NaN notitle
+
+###
+
+set output 'path_tracing_spatial_probes.png'
+#set title "Monte Carlo Path Tracing"
+set style fill solid
+unset title
+unset arrow
+unset xtics
+unset ytics
+unset border
+
+idx = 1
+do for [y=-2:2] {
+do for [x=-2:2] {
+do for [i=1:75] {
+  # Generate a random angle and radius
+  angle = rand(0) * 2 * pi
+  radius = 10.0
+
+  # Convert polar coordinates to Cartesian for the endpoint
+  x_start = x
+  y_start = y
+  x_end = x + radius * cos(angle)
+  y_end = y + radius * sin(angle)
+
+  # Define an arrow from the center (0,0) to the random endpoint
+  # 'head' styles the arrowhead
+  # 'lc palette' assigns a random color from the defined palette
+  set arrow idx from x_start,y_start to x_end,y_end head filled size screen 0.02,15,45 lw 10 lt 1 lc rgb "0xD09400d3"
+  set obj idx circle at x_start,y_start size scr 0.01 fc rgb "red" front
+  idx = idx + 1
+}
+}
+}
+
+plot [-3:3] [-3:3] NaN notitle
+

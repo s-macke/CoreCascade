@@ -44,6 +44,78 @@ func PlotCascade() {
 	}
 }
 
+func PlotCascadeBilinearFix() {
+	f, err := os.Create("plots/probes_bilinear_fix.data")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	const WIDTH, HEIGHT = 8, 8
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
+	fmt.Fprintln(f, "# NCascades", cc.NCascades)
+	for c := 0; c < cc.NCascades; c++ {
+		ciNear := cc.CascadeInfo[c]
+		ciFar := cc.CascadeInfo[c+1]
+		fmt.Fprintln(f, "# Cascade", c, "total", ciNear.Total(), "dirCount", ciNear.DirCount, "N", ciNear.N, "tStart", ciNear.TStart, "tEnd", ciNear.TEnd)
+		for i := 0; i < ciNear.N; i++ {
+			for j := 0; j < ciNear.M; j++ {
+				for k := 0; k < ciNear.DirCount; k++ {
+					probe1 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, i, j, (i>>1)+0, (j>>1)+0, k)
+					probe2 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, i, j, (i>>1)+1, (j>>1)+0, k)
+					probe3 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, i, j, (i>>1)+1, (j>>1)+1, k)
+					probe4 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, i, j, (i>>1)+0, (j>>1)+1, k)
+					fmt.Fprintf(f, "%f %f %f %f\n", probe1.Ray.P.X, probe1.Ray.P.Y, probe1.Ray.Dir.X*probe1.Tmax, probe1.Ray.Dir.Y*probe1.Tmax)
+					fmt.Fprintf(f, "%f %f %f %f\n", probe2.Ray.P.X, probe2.Ray.P.Y, probe2.Ray.Dir.X*probe2.Tmax, probe2.Ray.Dir.Y*probe2.Tmax)
+					fmt.Fprintf(f, "%f %f %f %f\n", probe3.Ray.P.X, probe3.Ray.P.Y, probe3.Ray.Dir.X*probe3.Tmax, probe3.Ray.Dir.Y*probe3.Tmax)
+					fmt.Fprintf(f, "%f %f %f %f\n", probe4.Ray.P.X, probe4.Ray.P.Y, probe4.Ray.Dir.X*probe4.Tmax, probe4.Ray.Dir.Y*probe4.Tmax)
+				}
+			}
+		}
+		fmt.Fprintln(f)
+	}
+}
+
+func PlotCascadeBilinearFixSimple() {
+	f, err := os.Create("plots/probes_bilinear_fix_simple.data")
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+
+	const WIDTH, HEIGHT = 8, 8
+	cc := radiance_cascade.NewCascadeCalculator(WIDTH, HEIGHT)
+	ciNear := cc.CascadeInfo[0]
+	ciFar := cc.CascadeInfo[1]
+
+	for k := 0; k < ciNear.DirCount; k++ {
+		probe := ciNear.GetProbe(0, 0, k)
+
+		probe1 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, 0, 0, +0, +0, k)
+		probe2 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, 0, 0, +1, +0, k)
+		probe3 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, 0, 0, +1, +1, k)
+		probe4 := radiance_cascade.GetBilinearFixProbe(&ciNear, &ciFar, 0, 0, +0, +1, k)
+		fmt.Fprintf(f, "%f %f %f %f %f %f\n", probe1.Ray.P.X, probe1.Ray.P.Y, probe1.Ray.Dir.X*probe1.Tmax, probe1.Ray.Dir.Y*probe1.Tmax, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+		fmt.Fprintf(f, "%f %f %f %f %f %f\n", probe2.Ray.P.X, probe2.Ray.P.Y, probe2.Ray.Dir.X*probe2.Tmax, probe2.Ray.Dir.Y*probe2.Tmax, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+		fmt.Fprintf(f, "%f %f %f %f %f %f\n", probe3.Ray.P.X, probe3.Ray.P.Y, probe3.Ray.Dir.X*probe3.Tmax, probe3.Ray.Dir.Y*probe3.Tmax, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+		fmt.Fprintf(f, "%f %f %f %f %f %f\n", probe4.Ray.P.X, probe4.Ray.P.Y, probe4.Ray.Dir.X*probe4.Tmax, probe4.Ray.Dir.Y*probe4.Tmax, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+	}
+	fmt.Fprintln(f)
+
+	ciNear = cc.CascadeInfo[1]
+	for k := 0; k < ciNear.DirCount; k++ {
+		probe := ciNear.GetProbe(0, 0, k)
+		fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+		probe = ciNear.GetProbe(1, 0, k)
+		fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+		probe = ciNear.GetProbe(0, 1, k)
+		fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+		probe = ciNear.GetProbe(1, 1, k)
+		fmt.Fprintf(f, "%f %f %f %f\n", probe.Ray.P.X, probe.Ray.P.Y, probe.Ray.Dir.X*probe.Tmax, probe.Ray.Dir.Y*probe.Tmax)
+	}
+
+}
+
 func PlotCascade2() {
 	f, err := os.Create("plots/plot2.data")
 	if err != nil {
