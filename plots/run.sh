@@ -1,7 +1,7 @@
 set -e
 
 gnuplot penumbra.gp
-magick convert penumbra_annotated.png -alpha off -colors 256 ../assets/penumbra_annotated.png
+magick convert penumbra_annotated.png -alpha off -set colorspace Gray -separate -average ../assets/penumbra_annotated.png
 
 gnuplot probe_center.gp
 magick probe_center.png -alpha off -resize 50% -colors 64 ../assets/probe_center.png
