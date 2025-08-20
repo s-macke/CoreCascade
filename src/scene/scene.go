@@ -6,7 +6,7 @@ import (
 
 type sdObject interface {
 	Distance(p primitives.Vec2) float64
-	GetColor() primitives.Color
+	GetMaterial() primitives.Material
 }
 
 type Scene struct {
@@ -19,18 +19,21 @@ func (s *Scene) GetExtent() (primitives.Vec2, primitives.Vec2) {
 	return primitives.Vec2{X: -1.0, Y: -1.0}, primitives.Vec2{X: 1.0, Y: 1.0}
 }
 
-func (s *Scene) SignedDistance(p primitives.Vec2) (float64, primitives.Color) {
+func (s *Scene) SignedDistance(p primitives.Vec2) (float64, primitives.Material) {
 	// Calculate the signed distance to the circle and box
-	c := primitives.Color{R: 0., G: 0., B: 0.}
+	m := primitives.Material{
+		Emissive:   primitives.Black,
+		Absorption: 0,
+	}
 	d := 1e99 // Initialize with a large distance
 	for _, obj := range s.objects {
 		distance := obj.Distance(p)
 		if distance < d {
 			d = distance
-			c = obj.GetColor()
+			m = obj.GetMaterial()
 		}
 	}
-	return d, c
+	return d, m
 }
 
 func (s *Scene) Intersect(r primitives.Ray, tmax float64) (bool, primitives.Color) {
@@ -41,9 +44,9 @@ func (s *Scene) Intersect(r primitives.Ray, tmax float64) (bool, primitives.Colo
 		if p.X < -2.1 || p.X > 2.1 || p.Y < -2.1 || p.Y > 2.1 {
 			return false, black // Out of bounds
 		}
-		d, c := s.SignedDistance(p)
+		d, m := s.SignedDistance(p)
 		if d < 1e-3 {
-			return true, c
+			return true, m.Emissive
 		}
 		t += max(d, 0.01) // define some minimum step size, which is determined by the smallest object in the scene
 		if t > tmax {

@@ -11,11 +11,11 @@ import (
 type Box struct {
 	Center   primitives.Vec2
 	HalfSize primitives.Vec2
-	Color    primitives.Color
+	Material primitives.Material
 }
 
-func (b *Box) GetColor() primitives.Color {
-	return b.Color
+func (b *Box) GetMaterial() primitives.Material {
+	return b.Material
 }
 
 // sdBox calculates the signed distance from a point p to an axis-aligned box b.

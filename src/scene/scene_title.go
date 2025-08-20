@@ -30,8 +30,8 @@ func NewSceneTitle(time float64) *Scene {
 	}
 	s := &Scene{}
 	s.objects = []sdObject{
-		&signed_distance.Box{Center: primitives.Vec2{X: 0., Y: 0.5}, HalfSize: primitives.Vec2{X: 0.5, Y: 0.02}, Color: primitives.Color{R: 0.01, G: 0.01, B: 0.04}},
-		&signed_distance.Box{Center: primitives.Vec2{X: 0., Y: -0.5}, HalfSize: primitives.Vec2{X: 0.3, Y: 0.02}, Color: primitives.Color{R: 0.03, G: 0.02, B: 0.01}},
+		&signed_distance.Box{Center: primitives.Vec2{X: 0., Y: 0.5}, HalfSize: primitives.Vec2{X: 0.5, Y: 0.02}, Material: primitives.NewEmissiveMaterial(0.01, 0.01, 0.04)},
+		&signed_distance.Box{Center: primitives.Vec2{X: 0., Y: -0.5}, HalfSize: primitives.Vec2{X: 0.3, Y: 0.02}, Material: primitives.NewEmissiveMaterial(0.03, 0.02, 0.01)},
 	}
 	/*
 		for i := 0; i < 20; i++ {
@@ -55,9 +55,9 @@ func NewSceneTitle(time float64) *Scene {
 			// Skip spaces
 		case '#':
 			s.objects = append(s.objects, &signed_distance.Circle{
-				Center: primitives.Vec2{X: x, Y: y},
-				Radius: 0.007,
-				Color:  primitives.Color{R: 0.3, G: 0.2, B: 0.1},
+				Center:   primitives.Vec2{X: x, Y: y},
+				Radius:   0.007,
+				Material: primitives.NewEmissiveMaterial(0.3, 0.2, 0.1),
 			})
 		case '\n':
 			x = -0.5
@@ -78,9 +78,9 @@ func NewSceneTitle(time float64) *Scene {
 			// Skip spaces
 		case '#':
 			s.objects = append(s.objects, &signed_distance.Circle{
-				Center: primitives.Vec2{X: x, Y: y},
-				Radius: 0.007,
-				Color:  primitives.Color{R: 0.15, G: 0.15, B: 0.6},
+				Center:   primitives.Vec2{X: x, Y: y},
+				Radius:   0.007,
+				Material: primitives.NewEmissiveMaterial(0.15, 0.15, 0.6),
 			})
 		case '\n':
 			x = -0.85
