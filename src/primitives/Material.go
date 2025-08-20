@@ -22,6 +22,13 @@ func NewEmissiveSRGBMaterial(r, g, b float64) Material {
 func NewBlackMaterial() Material {
 	return Material{
 		Emissive:   Black,
-		Absorption: 0,
+		Absorption: 1.,
+	}
+}
+
+func NewAbsorbiveMaterial(value float64) Material {
+	return Material{
+		Emissive:   Black,
+		Absorption: value,
 	}
 }

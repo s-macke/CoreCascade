@@ -24,6 +24,8 @@ func NewScene(sceneAsString string, time float64) *scene.Scene {
 		return scene.NewSceneBeam()
 	case "title":
 		return scene.NewSceneTitle(time)
+	case "absorption":
+		return scene.NewSceneAbsorption(time)
 	}
 	panic("Unknown scene")
 }
@@ -72,11 +74,11 @@ func main() {
 	default:
 		panic("Unknown method")
 	}
-
-	//img := primitives.NewSampledImageFromJpeg("assets/pexels-fwstudio-33348-129731.jpg")
-	//img := primitives.NewSampledImageFromJpeg("assets/Texture_P7150102.JPG")
-	//image.Blend(img)
+	/*
+		img := primitives.NewSampledImageFromJpeg("assets/pexels-fwstudio-33348-129731.jpg")
+		//img := primitives.NewSampledImageFromJpeg("assets/Texture_P7150102.JPG")
+		image.Blend(img)
+	*/
 
 	image.Store(config.OutputFilename)
-
 }

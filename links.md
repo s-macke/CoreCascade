@@ -61,7 +61,6 @@ https://github.com/Yaazarai/RadianceCascades
 # Rust/ WGSL Radiance Cascade implementation
 https://github.com/kornelski/bevy_flatland_radiance_cascades
 
-
 # 2D signed distance functions example:
 https://www.shadertoy.com/view/4dfXDn
 
@@ -101,6 +100,14 @@ https://tmpvar.com/poc/radiance-cascades/flatland-2d/radiance-intervals-2d.js
 
 # Radiance Cascade calculator
 https://kornel.ski/radiance
+
+# dynamic diffuse global illumination with ray-traced irradiance fields
+https://www.jcgt.org/published/0008/02/01/paper-lowres.pdf
+https://www.youtube.com/watch?v=0YfO5mFXPos
+https://github.com/DaOnlyOwner/hym
+https://github.com/Toocanzs/TooD?tab=readme-ov-file
+https://developer.nvidia.com/blog/rtx-global-illumination-part-i/
+https://github.com/NVIDIAGameWorks/RTXGI-DDGI
 
 # Glossar
 RC - Radiance Cascade

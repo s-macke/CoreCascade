@@ -12,6 +12,23 @@ done
 
 }
 
+absorption_anim_batch () {
+
+for i in $(seq 0 100);
+do
+    echo "=== Absorption Animation ${i} ==="
+    time=$(bc <<< "scale=2; ${i}/100.")
+    ID=$(printf '%02d\n' "$i")
+    echo "=== Vanilla Shadows ${ID} ==="
+    ./CoreCascade -scene absorption -method vanilla_radiance_cascade -output "absorption_anim/vanilla_absorption_${ID}" -time "${time}"
+    rm "absorption_anim/vanilla_absorption_${ID}.raw"
+done
+
+}
+
+
+
+
 
 path_tracing_batch () {
 
@@ -90,6 +107,6 @@ rm assets/bilinear_fix_beam.raw
 #./CoreCascade -method plot
 #path_tracing_batch
 #vanilla_radiance_cascade_batch
-bilinear_fix_radiance_cascade_batch
+#bilinear_fix_radiance_cascade_batch
 #rotate_batch
-
+absorption_anim_batch
