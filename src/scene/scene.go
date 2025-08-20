@@ -2,6 +2,7 @@ package scene
 
 import (
 	"CoreCascade/primitives"
+	"math"
 )
 
 type sdObject interface {
@@ -20,38 +21,80 @@ func (s *Scene) GetExtent() (primitives.Vec2, primitives.Vec2) {
 }
 
 func (s *Scene) SignedDistance(p primitives.Vec2) (float64, primitives.Material) {
-	// Calculate the signed distance to the circle and box
+	// Calculate the total signed distance to the objects
 	m := primitives.Material{
 		Emissive:   primitives.Black,
 		Absorption: 0,
 	}
+	negative := false
+
 	d := 1e99 // Initialize with a large distance
 	for _, obj := range s.objects {
 		distance := obj.Distance(p)
-		if distance < d {
-			d = distance
-			m = obj.GetMaterial()
+		if distance < 0 {
+			negative = true
+			// add material properties in case they overlap
+			mtemp := obj.GetMaterial()
+			m.Absorption += mtemp.Absorption
+			m.Emissive.R += mtemp.Emissive.R
+			m.Emissive.G += mtemp.Emissive.G
+			m.Emissive.B += mtemp.Emissive.B
 		}
+		if math.Abs(distance) < d {
+			d = distance
+		}
+	}
+
+	if negative { // make absolutely sure, that the distance is negative to indicate that we are inside a medium. Otherwise, we cannot do one optimization later
+		d = -math.Abs(d)
 	}
 	return d, m
 }
 
-func (s *Scene) Intersect(r primitives.Ray, tmax float64) (bool, primitives.Color) {
-	black := primitives.Color{R: 0., G: 0., B: 0.}
-	t := 0.
-	for j := 0; j < 50; j++ {
+func (s *Scene) Intersect(r primitives.Ray, tmax float64) (visibility float64, c primitives.Color) {
+	t := 0.0
+	vis := 1.0
+	const eps = 1e-4
+	const minStep = 0.01
+
+	for j := 0; j < 128; j++ {
 		p := r.Trace(t)
+
+		// Scene bounds (optional)
 		if p.X < -2.1 || p.X > 2.1 || p.Y < -2.1 || p.Y > 2.1 {
-			return false, black // Out of bounds
+			return vis, c
 		}
+
 		d, m := s.SignedDistance(p)
-		if d < 1e-3 {
-			return true, m.Emissive
+		step := math.Max(math.Abs(d), minStep)
+
+		// Inside medium? integrate absorption + volumetric emission over the step
+		if d < 0 {
+			sa := math.Max(0.0, m.Absorption)
+			// If Emissive here is per-length volume emission, integrate closed-form
+			if sa > eps {
+				k := 1.0 - math.Exp(-sa*step)
+				c.R += vis * (m.Emissive.R / sa) * k
+				c.G += vis * (m.Emissive.G / sa) * k
+				c.B += vis * (m.Emissive.B / sa) * k
+				vis *= math.Exp(-sa * step)
+			} else {
+				// No absorption: pure additive over distance
+				c.R += vis * m.Emissive.R * step
+				c.G += vis * m.Emissive.G * step
+				c.B += vis * m.Emissive.B * step
+			}
+			// Early terminate if basically fully absorbed
+			if vis < eps {
+				return vis, c // basically fully absorbed
+			}
 		}
-		t += max(d, 0.01) // define some minimum step size, which is determined by the smallest object in the scene
+
+		t += step
 		if t > tmax {
-			return false, black
+			return vis, c
 		}
 	}
-	return false, black
+
+	return vis, c
 }

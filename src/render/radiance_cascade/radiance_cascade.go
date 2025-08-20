@@ -88,13 +88,7 @@ func (rc *RadianceCascade) MergeOnImage() {
 }
 
 func (rc *RadianceCascade) Radiance(probe CascadeProbe) CascadeRadianceResult {
-	hit, color := rc.scene.Intersect(probe.Ray, probe.Tmax)
-
-	// 1. it hit nothing, 0. if hit
-	visibility := 1.
-	if hit {
-		visibility = 0.
-	}
+	visibility, color := rc.scene.Intersect(probe.Ray, probe.Tmax)
 
 	return CascadeRadianceResult{
 		color:      color,
