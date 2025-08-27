@@ -3,12 +3,13 @@ package main
 import (
 	"CoreCascade/primitives"
 	"CoreCascade/render/radiance_cascade"
+	"CoreCascade/scene/scenes"
 	"fmt"
 	"os"
 )
 
 func PlotSignedDistance() {
-	scene := NewScene("shadows", 0.)
+	scene := scenes.NewSceneShadows(0)
 	for x := -2.0; x <= 2.0; x += 0.1 {
 		for y := -2.0; y <= 2.0; y += 0.1 {
 			d, _ := scene.SignedDistance(primitives.Vec2{X: x, Y: y})
@@ -16,7 +17,6 @@ func PlotSignedDistance() {
 		}
 		fmt.Println()
 	}
-
 }
 
 func PlotCascade() {

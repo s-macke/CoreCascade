@@ -10,7 +10,7 @@ import (
 
 // Implement https://www.shadertoy.com/view/3tsXzB
 
-func RenderPixel(s *scene.Scene, uv primitives.Vec2, samples int) primitives.Color {
+func RenderPixel(s scene.Scene, uv primitives.Vec2, samples int) primitives.Color {
 	col := primitives.Color{R: 0, G: 0, B: 0}
 	for i := 0; i <= samples; i++ {
 		angle := rand.Float64() * 2. * math.Pi
@@ -25,7 +25,7 @@ func RenderPixel(s *scene.Scene, uv primitives.Vec2, samples int) primitives.Col
 	return col
 }
 
-func RenderPathTracing(scene *scene.Scene, s *primitives.SampledImage) {
+func RenderPathTracing(scene scene.Scene, s *primitives.SampledImage) {
 	const SAMPLES = 100
 
 	for y := 0; y < s.Height; y++ {

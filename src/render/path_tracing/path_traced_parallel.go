@@ -9,7 +9,7 @@ import (
 
 // Implement https://www.shadertoy.com/view/3tsXzB
 
-func RenderPathTracingIteration(scene *scene.Scene, s *primitives.SampledImage, samples int) {
+func RenderPathTracingIteration(scene scene.Scene, s *primitives.SampledImage, samples int) {
 	var wg sync.WaitGroup
 
 	for y := 0; y < s.Height; y++ {
@@ -27,7 +27,7 @@ func RenderPathTracingIteration(scene *scene.Scene, s *primitives.SampledImage, 
 	wg.Wait()
 }
 
-func RenderPathTracingParallel(scene *scene.Scene, s *primitives.SampledImage, maxIterations int) *primitives.SampledImage {
+func RenderPathTracingParallel(scene scene.Scene, s *primitives.SampledImage, maxIterations int) *primitives.SampledImage {
 	const SAMPLES = 200
 	for i := 1; i <= maxIterations; i++ {
 		fmt.Printf("Iteration %d / %d\n", i, maxIterations)

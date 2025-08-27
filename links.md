@@ -109,6 +109,10 @@ https://github.com/Toocanzs/TooD?tab=readme-ov-file
 https://developer.nvidia.com/blog/rtx-global-illumination-part-i/
 https://github.com/NVIDIAGameWorks/RTXGI-DDGI
 
+# DDA Algorithm Interactive
+https://aaaa.sh/creatures/dda-algorithm-interactive/
+https://www.shadertoy.com/view/4dX3zl
+
 # Glossar
 RC - Radiance Cascade
 HRC - Holographic Radiance Cascade

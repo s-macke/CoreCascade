@@ -45,13 +45,13 @@ func BiLinear(ratio primitives.Vec2, s0, s1, s2, s3 CascadeRadianceResult) Casca
 type RadianceCascade struct {
 	width, height int
 	bilinearFix   bool
-	scene         *scene.Scene
+	scene         scene.Scene
 	s             *primitives.SampledImage
 	cc            *CascadeCalculator
 	cascades      []*Cascade
 }
 
-func NewRadianceCascade(scene *scene.Scene, s *primitives.SampledImage, bilinearFix bool) *RadianceCascade {
+func NewRadianceCascade(scene scene.Scene, s *primitives.SampledImage, bilinearFix bool) *RadianceCascade {
 	rc := &RadianceCascade{
 		width:       s.Width,
 		height:      s.Height,
