@@ -100,7 +100,6 @@ rm assets/bilinear_fix_beam.raw
 
 (cd src && go build -o ../CoreCascade)
 
-
 #./CoreCascade -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
 #./CoreCascade -scene title -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_title
 
@@ -109,4 +108,4 @@ rm assets/bilinear_fix_beam.raw
 #vanilla_radiance_cascade_batch
 #bilinear_fix_radiance_cascade_batch
 #rotate_batch
-absorption_anim_batch
+#absorption_anim_batch

@@ -2,32 +2,36 @@ package main
 
 import (
 	"CoreCascade/primitives"
-	"CoreCascade/render/path_tracing"
-	"CoreCascade/render/radiance_cascade"
+	"CoreCascade/render"
 	"CoreCascade/scene"
+	"CoreCascade/scene/scenes"
+	"CoreCascade/scene/sdf"
 	"fmt"
 	"strings"
 )
 
-func NewScene(sceneAsString string, time float64) *scene.Scene {
+func NewScene(sceneAsString string, time float64) scene.Scene {
 	sceneAsString = strings.ToLower(sceneAsString)
+	var s *sdf.Scene = nil
 	switch sceneAsString {
 	case "center":
-		return scene.NewSceneCenter()
+		s = scenes.NewSceneCenter()
 	case "shadows":
-		return scene.NewSceneShadows(time)
+		s = scenes.NewSceneShadows(time)
 	case "pinhole":
-		return scene.NewScenePinhole()
+		s = scenes.NewScenePinhole()
 	case "penumbra":
-		return scene.NewScenePenumbra()
+		s = scenes.NewScenePenumbra()
 	case "beam":
-		return scene.NewSceneBeam()
+		s = scenes.NewSceneBeam()
 	case "title":
-		return scene.NewSceneTitle(time)
+		s = scenes.NewSceneTitle(time)
 	case "absorption":
-		return scene.NewSceneAbsorption(time)
+		s = scenes.NewSceneAbsorption(time)
+	default:
+		panic("Unknown scene: " + sceneAsString)
 	}
-	panic("Unknown scene")
+	return s
 }
 
 func main() {
@@ -46,14 +50,9 @@ func main() {
 	}
 
 	switch config.Method {
-	case "path_tracing":
-		path_tracing.RenderPathTracing(sc, image)
-	case "path_tracing_parallel":
-		path_tracing.RenderPathTracingParallel(sc, image, 10)
-	case "vanilla_radiance_cascade":
-		radiance_cascade.NewRadianceCascade(sc, image, false).Render()
-	case "bilinear_fix_radiance_cascade":
-		radiance_cascade.NewRadianceCascade(sc, image, true).Render()
+	case "path_tracing", "path_tracing_parallel", "vanilla_radiance_cascade", "bilinear_fix_radiance_cascade":
+		render.MultiPassRenderer(sc, image, config.Method)
+
 	case "error":
 		//truth := NewSampledImageFromFile("ring_shadow.raw")
 		//truth.Error(img)

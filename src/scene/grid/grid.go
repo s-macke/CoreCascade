@@ -1,0 +1,95 @@
+package grid
+
+import (
+	"CoreCascade/primitives"
+	"CoreCascade/scene/sdf"
+	"math"
+)
+
+type Voxel struct {
+	Material primitives.Material
+	distance float64
+}
+
+type Scene struct {
+	Width, Height int
+	M             [][]Voxel
+}
+
+func NewScene(width, height int) *Scene {
+	s := &Scene{
+		Width:  width,
+		Height: height,
+	}
+	s.M = make([][]Voxel, height)
+	for i := range s.M {
+		s.M[i] = make([]Voxel, width)
+		for j := range s.M[i] {
+			s.M[i][j].Material = primitives.VoidMaterial
+			s.M[i][j].distance = 0.0
+		}
+	}
+	return s
+}
+
+func NewSceneFromSDF(width, height int, sdf *sdf.Scene) *Scene {
+	s := NewScene(width, height)
+	for y := 0; y < height; y++ {
+		for x := 0; x < width; x++ {
+			uv := primitives.Vec2{X: (float64(x)/float64(width))*2 - 1, Y: (float64(y)/float64(height))*2 - 1}
+			d, m := sdf.SignedDistance(uv)
+			s.M[y][x].Material = m
+			s.M[y][x].distance = d
+		}
+	}
+	return s
+}
+
+func (s *Scene) IsBlack() bool {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
+			if s.M[y][x].Material.Emissive.Intensity() > 1e-2 {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func (s *Scene) Intersect(r primitives.Ray, tmax float64) (visibility float64, c primitives.Color) {
+	vis := 1.0
+	const eps = 1e-4
+
+	// Inside medium? integrate absorption + volumetric emission over the step
+	dt := 2. / float64(s.Width)
+	for t := 0.; t < tmax; t += dt {
+		p := r.Trace(t)
+		x := (p.X + 1.) / 2.0 * float64(s.Width)
+		y := (p.Y + 1.) / 2.0 * float64(s.Height)
+		if x < 0 || y < 0 || x >= float64(s.Width) || y >= float64(s.Height) {
+			return visibility, c // out of bounds
+		}
+		v := s.M[int(y)][int(x)]
+		// Inside medium? integrate absorption + volumetric emission over the step
+		sa := math.Max(0.0, v.Material.Absorption)
+		// If Emissive here is per-length volume emission, integrate closed-form
+		if sa > eps {
+			loss := math.Exp(-sa * dt)
+			k := 1.0 - loss
+			c.R += vis * (v.Material.Emissive.R / sa) * k
+			c.G += vis * (v.Material.Emissive.G / sa) * k
+			c.B += vis * (v.Material.Emissive.B / sa) * k
+			vis *= loss
+		} else {
+			// No absorption: pure additive over distance
+			c.R += vis * v.Material.Emissive.R * dt
+			c.G += vis * v.Material.Emissive.G * dt
+			c.B += vis * v.Material.Emissive.B * dt
+		}
+		// Early terminate if basically fully absorbed
+		if vis < eps {
+			return vis, c // basically fully absorbed
+		}
+	}
+	return vis, c
+}
