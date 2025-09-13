@@ -60,18 +60,19 @@ func (s *Scene) Intersect(r primitives.Ray, tmax float64) (visibility float64, c
 	vis := 1.0
 	const eps = 1e-4
 
-	// Inside medium? integrate absorption + volumetric emission over the step
 	dt := 2. / float64(s.Width)
 	for t := 0.; t < tmax; t += dt {
 		p := r.Trace(t)
 		x := (p.X + 1.) / 2.0 * float64(s.Width)
 		y := (p.Y + 1.) / 2.0 * float64(s.Height)
-		if x < 0 || y < 0 || x >= float64(s.Width) || y >= float64(s.Height) {
-			return visibility, c // out of bounds
+		if int(x) < 0 || int(y) < 0 || int(x) >= s.Width || int(y) >= s.Height {
+			continue
+			// return visibility, c
+			// out of bounds
 		}
 		v := s.M[int(y)][int(x)]
-		// Inside medium? integrate absorption + volumetric emission over the step
 		sa := math.Max(0.0, v.Material.Absorption)
+		// Inside medium? integrate absorption + volumetric emission over the step
 		// If Emissive here is per-length volume emission, integrate closed-form
 		if sa > eps {
 			loss := math.Exp(-sa * dt)

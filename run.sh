@@ -1,4 +1,6 @@
 set -e
+set -o pipefail
+set -u
 
 rotate_batch () {
 
@@ -13,19 +15,31 @@ done
 }
 
 absorption_anim_batch () {
+mkdir -p absorption_anim
 
 for i in $(seq 0 100);
 do
     echo "=== Absorption Animation ${i} ==="
     time=$(bc <<< "scale=2; ${i}/100.")
     ID=$(printf '%02d\n' "$i")
-    echo "=== Vanilla Shadows ${ID} ==="
     ./CoreCascade -scene absorption -method vanilla_radiance_cascade -output "absorption_anim/vanilla_absorption_${ID}" -time "${time}"
     rm "absorption_anim/vanilla_absorption_${ID}.raw"
 done
 
 }
 
+fluid_anim_batch () {
+
+mkdir -p fluid_anim
+for i in $(seq 0 200);
+do
+    echo "=== Fluid Animation ${i} ==="
+    ID=$(printf '%02d\n' "$i")
+    ./CoreCascade -scene fluid -method vanilla_radiance_cascade -output "fluid_anim/fluid_${ID}" -time "${i}"
+    rm "fluid_anim/fluid_${ID}.raw"
+done
+
+}
 
 
 
@@ -109,3 +123,4 @@ rm assets/bilinear_fix_beam.raw
 #bilinear_fix_radiance_cascade_batch
 #rotate_batch
 #absorption_anim_batch
+#fluid_anim_batch
