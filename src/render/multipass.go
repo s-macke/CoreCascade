@@ -44,7 +44,7 @@ func MultiPassRenderer(sc scene.Scene, image *primitives.SampledImage, method st
 	}
 	secondaryImage := primitives.NewSampledImage(image.Width, image.Height)
 	Pass(secondaryLight, secondaryImage, method)
-	image.Merge(secondaryImage)
+	image.Add(secondaryImage)
 }
 
 func Pass(sc scene.Scene, image *primitives.SampledImage, method string) {

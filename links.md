@@ -34,12 +34,17 @@ https://m4xc.dev/articles/fundamental-rc/
 https://m4xc.dev/blog/surfel-maintenance/
 Code: https://github.com/mxcop/src-dgi
 
+# Good and detailed Blog article about 2D light calculation in general
+https://benedikt-bitterli.me/tantalum/
+https://github.com/tunabrain/tantalum
+
 # Radiance Cascadee fully written in Rust
 https://github.com/entropylost/amida/
 
 # Holographic Radiance Cascades
 https://arxiv.org/abs/2505.02041
 https://github.com/Yaazarai/Holographic-Radiance-Cascades
+https://github.com/Yaazarai/Volumetric-HRC
 https://www.shadertoy.com/view/4ctczl
 
 # Guy tries to write a game engine with Radiance Cascades
@@ -70,6 +75,9 @@ https://www.shadertoy.com/view/tdjBR1
 # Clouds 2D with shadowing
 https://www.shadertoy.com/view/WddSDr
 
+# Fire Fighter
+https://www.shadertoy.com/view/msf3WH
+
 # Turbulent Flame
 https://www.shadertoy.com/view/wffXDr
 
@@ -94,7 +102,10 @@ https://www.shadertoy.com/view/MXyBDW
 # Nove depth aware upscaling
 https://www.shadertoy.com/view/4XXSWS
 
-# Another Blog. Tries is with WGSL
+# Tonemapper comparison
+https://www.shadertoy.com/view/tcjyDV
+
+# Another Blog. Tries it with WGSL
 https://tmpvar.com/poc/radiance-cascades/
 https://tmpvar.com/poc/radiance-cascades/flatland-2d/radiance-intervals-2d.js
 
