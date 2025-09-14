@@ -108,7 +108,7 @@ The Go application supports the following features:
 - **Multiple Rendering Methods**:
   - Monte-Carlo Path tracing
   - Radiance Cascades rendering (Vanilla and Bilinear Fix)
-  - Light Propagation (under development)
+  - Light Propagation
 - **SDF-based Scene Representation**: Uses Signed Distance Fields for flexible object representation
 
 ### Building

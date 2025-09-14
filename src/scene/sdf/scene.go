@@ -20,6 +20,11 @@ func (s *Scene) GetExtent() (primitives.Vec2, primitives.Vec2) {
 	return primitives.Vec2{X: -1.0, Y: -1.0}, primitives.Vec2{X: 1.0, Y: 1.0}
 }
 
+func (s *Scene) GetMaterial(p primitives.Vec2) primitives.Material {
+	_, m := s.SignedDistance(p)
+	return m
+}
+
 func (s *Scene) SignedDistance(p primitives.Vec2) (float64, primitives.Material) {
 	// Calculate the total signed distance to the objects
 	m := primitives.VoidMaterial

@@ -58,5 +58,7 @@ func Pass(sc scene.Scene, image *primitives.SampledImage, method string) {
 		radiance_cascade.NewRadianceCascade(sc, image, false).Render()
 	case "bilinear_fix_radiance_cascade":
 		radiance_cascade.NewRadianceCascade(sc, image, true).Render()
+	default:
+		panic("Unsupported method")
 	}
 }

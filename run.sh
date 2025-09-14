@@ -41,9 +41,6 @@ done
 
 }
 
-
-
-
 path_tracing_batch () {
 
 echo "=== Path Tracing Penumbra ==="
@@ -111,6 +108,34 @@ rm assets/bilinear_fix_beam.raw
 
 }
 
+light_propagation_volumes_batch () {
+
+echo "=== Light Propagation Volumes Absorption ==="
+./CoreCascade -scene absorption -method light_propagation_volumes -output "assets/lpv_absorption" -time 0
+rm assets/lpv_absorption.raw
+
+echo "=== Light Propagation Volumes Penumbra ==="
+./CoreCascade -scene penumbra -method light_propagation_volumes -output assets/lpv_penumbra
+rm assets/lpv_penumbra.raw
+
+echo "=== Light Propagation Volumes Center ==="
+./CoreCascade -scene center -method light_propagation_volumes -output assets/lpv_center
+rm assets/lpv_center.raw
+
+echo "=== Light Propagation Volumes Pinhole ==="
+./CoreCascade -scene pinhole -method light_propagation_volumes -output assets/lpv_pinhole
+rm assets/lpv_pinhole.raw
+
+echo "=== Light Propagation Volumes Shadows ==="
+./CoreCascade -scene shadows -method light_propagation_volumes -output assets/lpv_shadows
+rm assets/lpv_shadows.raw
+
+echo "=== Light Propagation Volumes Beam ==="
+./CoreCascade -scene beam -method light_propagation_volumes -output assets/lpv_beam
+rm assets/lpv_beam.raw
+
+}
+
 
 (cd src && go build -o ../CoreCascade)
 
@@ -118,6 +143,7 @@ rm assets/bilinear_fix_beam.raw
 #./CoreCascade -scene title -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_title
 
 #./CoreCascade -method plot
+#light_propagation_volumes_batch
 #path_tracing_batch
 #vanilla_radiance_cascade_batch
 #bilinear_fix_radiance_cascade_batch

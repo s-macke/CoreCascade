@@ -56,6 +56,15 @@ func (s *Scene) IsBlack() bool {
 	return true
 }
 
+func (s *Scene) GetMaterial(p primitives.Vec2) primitives.Material {
+	x := (p.X + 1.) / 2.0 * float64(s.Width)
+	y := (p.Y + 1.) / 2.0 * float64(s.Height)
+	if int(x) < 0 || int(y) < 0 || int(x) >= s.Width || int(y) >= s.Height {
+		return primitives.VoidMaterial
+	}
+	return s.M[int(y)][int(x)].Material // bilinear maybe?
+}
+
 func (s *Scene) Intersect(r primitives.Ray, tmax float64) (visibility float64, c primitives.Color) {
 	vis := 1.0
 	const eps = 1e-4
@@ -63,6 +72,7 @@ func (s *Scene) Intersect(r primitives.Ray, tmax float64) (visibility float64, c
 	dt := 2. / float64(s.Width)
 	for t := 0.; t < tmax; t += dt {
 		p := r.Trace(t)
+
 		x := (p.X + 1.) / 2.0 * float64(s.Width)
 		y := (p.Y + 1.) / 2.0 * float64(s.Height)
 		if int(x) < 0 || int(y) < 0 || int(x) >= s.Width || int(y) >= s.Height {

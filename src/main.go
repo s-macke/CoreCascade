@@ -3,6 +3,7 @@ package main
 import (
 	"CoreCascade/primitives"
 	"CoreCascade/render"
+	"CoreCascade/render/light_propagation_volumes"
 	"CoreCascade/scene"
 	"CoreCascade/scene/scenes"
 	"fmt"
@@ -66,7 +67,8 @@ func main() {
 	switch config.Method {
 	case "path_tracing", "path_tracing_parallel", "vanilla_radiance_cascade", "bilinear_fix_radiance_cascade":
 		render.MultiPassRenderer(sc, image, config.Method)
-
+	case "light_propagation_volumes":
+		light_propagation_volumes.LightPropagationVolume(sc, image)
 	case "error":
 		//truth := NewSampledImageFromFile("ring_shadow.raw")
 		//truth.Error(img)
