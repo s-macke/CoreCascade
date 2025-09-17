@@ -112,6 +112,9 @@ https://tmpvar.com/poc/radiance-cascades/flatland-2d/radiance-intervals-2d.js
 # Radiance Cascade calculator
 https://kornel.ski/radiance
 
+# Another bilinear fix implementation
+https://jsfiddle.net/cbenn/c0dyh6pm
+
 # dynamic diffuse global illumination with ray-traced irradiance fields
 https://www.jcgt.org/published/0008/02/01/paper-lowres.pdf
 https://www.youtube.com/watch?v=0YfO5mFXPos

@@ -34,12 +34,26 @@ mkdir -p fluid_anim
 for i in $(seq 0 200);
 do
     echo "=== Fluid Animation ${i} ==="
-    ID=$(printf '%02d\n' "$i")
+    ID=$(printf '%04d\n' "$i")
     ./CoreCascade -scene fluid -method vanilla_radiance_cascade -output "fluid_anim/fluid_${ID}" -time "${i}"
     rm "fluid_anim/fluid_${ID}.raw"
 done
 
 }
+
+directional_anim_batch () {
+
+mkdir -p directional_anim
+for i in $(seq 0 60);
+do
+    echo "=== Directional Animation ${i} ==="
+    ID=$(printf '%04d\n' "$i")
+    ./CoreCascade -scene directional -method vanilla_radiance_cascade -output "directional_anim/directional_${ID}" -time "${i}"
+    rm "directional_anim/directional_${ID}.raw"
+done
+
+}
+
 
 path_tracing_batch () {
 
@@ -141,6 +155,9 @@ rm assets/lpv_beam.raw
 
 #./CoreCascade -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
 #./CoreCascade -scene title -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_title
+#./CoreCascade -scene fluid -method vanilla_radiance_cascade -output "fluid" -time 0
+#./CoreCascade -scene directional -method vanilla_radiance_cascade -output "center" -time 0
+#./CoreCascade -scene directional -method bilinear_fix_radiance_cascade -output "center" -time 0
 
 #./CoreCascade -method plot
 #light_propagation_volumes_batch
@@ -150,3 +167,5 @@ rm assets/lpv_beam.raw
 #rotate_batch
 #absorption_anim_batch
 #fluid_anim_batch
+#directional_anim_batch
+

@@ -16,6 +16,8 @@ func NewScene(sceneAsString string, time float64) scene.Scene {
 	switch sceneAsString {
 	case "center":
 		s = scenes.NewSceneCenter()
+	case "directional":
+		s = scenes.NewSceneDirectional(time)
 	case "shadows":
 		s = scenes.NewSceneShadows(time)
 	case "pinhole":

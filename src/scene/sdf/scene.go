@@ -70,18 +70,19 @@ func (s *Scene) Intersect(r primitives.Ray, tmax float64) (visibility float64, c
 		// Inside medium? integrate absorption + volumetric emission over the step
 		if d < 0 {
 			sa := math.Max(0.0, m.Absorption)
+			e := m.Emission(r.Dir)
 			// If Emissive here is per-length volume emission, integrate closed-form
 			if sa > eps {
 				k := 1.0 - math.Exp(-sa*step)
-				c.R += vis * (m.Emissive.R / sa) * k
-				c.G += vis * (m.Emissive.G / sa) * k
-				c.B += vis * (m.Emissive.B / sa) * k
+				c.R += vis * (e.R / sa) * k
+				c.G += vis * (e.G / sa) * k
+				c.B += vis * (e.B / sa) * k
 				vis *= math.Exp(-sa * step)
 			} else {
 				// No absorption: pure additive over distance
-				c.R += vis * m.Emissive.R * step
-				c.G += vis * m.Emissive.G * step
-				c.B += vis * m.Emissive.B * step
+				c.R += vis * e.R * step
+				c.G += vis * e.G * step
+				c.B += vis * e.B * step
 			}
 			// Early terminate if basically fully absorbed
 			if vis < eps {
