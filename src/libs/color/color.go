@@ -1,4 +1,4 @@
-package primitives
+package color
 
 import (
 	"image/color"

@@ -1,9 +1,20 @@
-package primitives
+package color
 
 import "math"
 
 type Oklab struct {
 	L, A, B float64
+}
+
+func NewRainbowOklabToLinear(t float64) Color {
+	// t in [0, 1]
+	angle := t * 2. * math.Pi
+	lab := Oklab{
+		L: 1.,
+		A: 0.4 * math.Cos(angle),
+		B: 0.4 * math.Sin(angle),
+	}
+	return lab.ToLinear()
 }
 
 func FromLinearToOkLab(c Color) Oklab {
@@ -23,7 +34,7 @@ func FromLinearToOkLab(c Color) Oklab {
 }
 
 // https://blog.pkh.me/p/43-the-current-technology-is-not-ready-for-proper-blending.html
-func (c *Oklab) FromOkLabToLinear() *Color {
+func (c *Oklab) ToLinear() Color {
 	l := c.L
 	a := c.A
 	b := c.B
@@ -35,7 +46,7 @@ func (c *Oklab) FromOkLabToLinear() *Color {
 	m := m_ * m_ * m_
 	s := s_ * s_ * s_
 
-	return &Color{
+	return Color{
 		R: +4.0767416621*l - 3.3077115913*m + 0.2309699292*s,
 		G: -1.2684380046*l + 2.6097574011*m - 0.3413193965*s,
 		B: -0.0041960863*l - 0.7034186147*m + 1.7076147010*s,

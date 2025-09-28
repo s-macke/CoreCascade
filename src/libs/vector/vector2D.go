@@ -1,4 +1,4 @@
-package primitives
+package vector
 
 import "math"
 
@@ -35,12 +35,12 @@ func (v *Vec2) Sub(w Vec2) {
 	v.Y -= w.Y
 }
 
-type Ray struct {
+type Ray2D struct {
 	P   Vec2
 	Dir Vec2
 }
 
-func (r *Ray) Trace(t float64) Vec2 {
+func (r *Ray2D) Trace(t float64) Vec2 {
 	// Move the ray's point along its direction vector by distance d
 	return Vec2{
 		r.P.X + r.Dir.X*t,

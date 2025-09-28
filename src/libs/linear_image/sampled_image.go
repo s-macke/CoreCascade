@@ -1,7 +1,8 @@
-package primitives
+package linear_image
 
 import (
-	"CoreCascade/filebuffer"
+	"color"
+	"filebuffer"
 	"fmt"
 	"image"
 	"image/jpeg"
@@ -10,7 +11,7 @@ import (
 )
 
 type SampledPixel struct {
-	Color   Color
+	Color   color.Color
 	Samples int
 }
 
@@ -28,7 +29,7 @@ func NewSampledImage(width, height int) *SampledImage {
 	for i := range s.pixels {
 		s.pixels[i] = make([]SampledPixel, width)
 		for j := range s.pixels[i] {
-			s.pixels[i][j] = SampledPixel{Color: Black, Samples: 0}
+			s.pixels[i][j] = SampledPixel{Color: color.Black, Samples: 0}
 		}
 	}
 	return s
@@ -78,7 +79,7 @@ func NewSampledImageFromJpeg(filename string) *SampledImage {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			c := img.At(x, y)
 			r, g, b, _ := c.RGBA()
-			col := NewSRGBColor(float64(r)/65535.0, float64(g)/65535.0, float64(b)/65535.0)
+			col := color.NewSRGBColor(float64(r)/65535.0, float64(g)/65535.0, float64(b)/65535.0)
 			s.SetColor(x-bounds.Min.X, y-bounds.Min.Y, col)
 		}
 	}
@@ -95,7 +96,6 @@ func (s *SampledImage) Add(s2 *SampledImage) {
 		for x := 0; x < s.Width; x++ {
 			col1 := s.GetColor(x, y)
 			col2 := s2.GetColor(x, y)
-			//fmt.Println(col1, col2)
 			col1.Add(col2)
 			s.SetColor(x, y, col1)
 		}
@@ -106,26 +106,31 @@ func (s *SampledImage) Clear() {
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
 			s.pixels[y][x].Samples = 0
-			s.pixels[y][x].Color = Black
+			s.pixels[y][x].Color = color.Black
 		}
 	}
 }
 
-func (s *SampledImage) AddColorSamples(x, y int, col Color, samples int) {
+func (s *SampledImage) AddColorSamples(x, y int, col color.Color, samples int) {
 	s.pixels[y][x].Color.Add(col)
 	s.pixels[y][x].Samples += samples
 }
 
-func (s *SampledImage) SetColor(x, y int, col Color) {
+func (s *SampledImage) AddColor(x, y int, col color.Color) {
+	s.pixels[y][x].Color.Add(col)
+	s.pixels[y][x].Samples = 1
+}
+
+func (s *SampledImage) SetColor(x, y int, col color.Color) {
 	s.pixels[y][x].Color = col
 	s.pixels[y][x].Samples = 1
 }
 
-func (s *SampledImage) GetColor(x, y int) Color {
+func (s *SampledImage) GetColor(x, y int) color.Color {
 	p := s.pixels[y][x]
 	c := p.Color
 	if p.Samples == 0 {
-		return Black
+		return color.Black
 	}
 	c.Div(float64(p.Samples))
 	return c
