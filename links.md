@@ -72,6 +72,9 @@ https://www.shadertoy.com/view/4dfXDn
 # volumetric lighting example:
 https://www.shadertoy.com/view/tdjBR1
 
+# Volumetric Radiance Cascades
+https://www.shadertoy.com/view/M3ycWt
+
 # Clouds 2D with shadowing
 https://www.shadertoy.com/view/WddSDr
 
@@ -122,6 +125,11 @@ https://github.com/DaOnlyOwner/hym
 https://github.com/Toocanzs/TooD?tab=readme-ov-file
 https://developer.nvidia.com/blog/rtx-global-illumination-part-i/
 https://github.com/NVIDIAGameWorks/RTXGI-DDGI
+
+
+# Signed distance basis function. Also very good articles
+https://iquilezles.org/articles/smin/
+https://iquilezles.org/articles/
 
 # DDA Algorithm Interactive
 https://aaaa.sh/creatures/dda-algorithm-interactive/
