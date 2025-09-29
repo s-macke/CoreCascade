@@ -88,6 +88,26 @@ func NewSampledImageFromJpeg(filename string) *SampledImage {
 
 }
 
+func (s *SampledImage) AddAmbient(c color.Color) {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
+			col1 := s.GetColor(x, y)
+			col1.Add(c)
+			s.SetColor(x, y, col1)
+		}
+	}
+}
+
+func (s *SampledImage) Mul(f float64) {
+	for y := 0; y < s.Height; y++ {
+		for x := 0; x < s.Width; x++ {
+			col1 := s.GetColor(x, y)
+			col1.Mul(f)
+			s.SetColor(x, y, col1)
+		}
+	}
+}
+
 func (s *SampledImage) Add(s2 *SampledImage) {
 	if s.Width != s2.Width || s.Height != s2.Height {
 		panic("SampledImage sizes do not match for merging")

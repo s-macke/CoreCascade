@@ -3,9 +3,23 @@ project_name: CoreCascade
 version: 2
 
 builds:
-  - dir: src
-    binary: CoreCascade
-    id: CoreCascade
+  - dir: src/2D
+    binary: CoreCascade2D
+    id: CoreCascade2D
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    ldflags:  # disable DWARD generation and symbol table
+      - -w -s
+  - dir: src/3D
+    binary: CoreCascade3D
+    id: CoreCascade3D
     env:
       - CGO_ENABLED=0
     goos:

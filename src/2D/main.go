@@ -97,7 +97,7 @@ func main() {
 	/*
 		img := primitives.NewSampledImageFromJpeg("assets/pexels-fwstudio-33348-129731.jpg")
 		//img := primitives.NewSampledImageFromJpeg("assets/Texture_P7150102.JPG")
-		image.Blend(img)
+		img.Blend(img)
 	*/
 	img.Store(config.OutputFilename)
 }

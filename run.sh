@@ -154,25 +154,25 @@ rm assets/lpv_beam.raw
 (cd src/2D && go build -o ../../CoreCascade2D)
 (cd src/3D && go build -o ../../CoreCascade3D)
 
+#./CoreCascade2D -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
+#./CoreCascade2D -scene title -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_title
+#./CoreCascade2D -scene fluid -method vanilla_radiance_cascade -output "fluid" -time 100
+#./CoreCascade2D -scene directional -method vanilla_radiance_cascade -output "center" -time 0
+#./CoreCascade2D -scene directional -method bilinear_fix_radiance_cascade -output "center" -time 0
 
-#./CoreCascade -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
-#./CoreCascade -scene title -method bilinear_fix_radiance_cascade -output assets/bilinear_fix_title
-#./CoreCascade -scene fluid -method vanilla_radiance_cascade -output "fluid" -time 100
-#./CoreCascade -scene directional -method vanilla_radiance_cascade -output "center" -time 0
-#./CoreCascade -scene directional -method bilinear_fix_radiance_cascade -output "center" -time 0
+#./CoreCascade2D -scene absorption -method vanilla_radiance_cascade -output "absorb" -time 0.5
+#./CoreCascade2D -scene absorption -method bilinear_fix_radiance_cascade -output "absorb" -time 0.5
+#./CoreCascade2D -scene absorption -method path_tracing_parallel -output "absorb2" -time 0.5
 
-#./CoreCascade -scene absorption -method vanilla_radiance_cascade -output "absorb" -time 0.5
-#./CoreCascade -scene absorption -method bilinear_fix_radiance_cascade -output "absorb" -time 0.5
-#./CoreCascade -scene absorption -method path_tracing_parallel -output "absorb2" -time 0.5
+#./CoreCascade2D -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
+#./CoreCascade2D -scene shadows -method path_tracing_parallel -output shadows
 
-#./CoreCascade -scene title -method vanilla_radiance_cascade -output assets/vanilla_title
+#./CoreCascade3D -scene height -method vanilla_radiance_cascade -output height
+#./CoreCascade3D -scene height -method path_tracing_3d_parallel -output height
+#./CoreCascade3D -scene fluid_height -method path_tracing_3d_parallel -output height -time 0.
 
-#./CoreCascade -scene height -method vanilla_radiance_cascade -output height
-#./CoreCascade -scene shadows -method path_tracing_parallel -output shadows
-#./CoreCascade -scene height -method path_tracing_3d_parallel -output height
-#./CoreCascade -scene fluid_height -method path_tracing_3d_parallel -output height -time 0.
+#./CoreCascade2D -method plot
 
-#./CoreCascade -method plot
 #light_propagation_volumes_batch
 #path_tracing_batch
 #vanilla_radiance_cascade_batch

@@ -4,6 +4,7 @@ import (
 	"CoreCascade2D/primitives"
 	"CoreCascade2D/scene/sdf"
 	"CoreCascade2D/scene/sdf/signed_distance"
+	"color"
 	"fmt"
 	"vector"
 )
@@ -30,6 +31,7 @@ func NewSceneTitle(time float64) *sdf.Scene {
  #####   #    #   ####    ####   #    #  #####   ######
 `,
 	}
+
 	s := &sdf.Scene{}
 	s.Objects = []sdf.SdObject{
 		&signed_distance.Box{Center: vector.Vec2{X: 0., Y: 0.5}, HalfSize: vector.Vec2{X: 0.5, Y: 0.02}, Material: primitives.NewAbsorbiveMaterial(20., 0., 0., 0.)},
@@ -46,10 +48,12 @@ func NewSceneTitle(time float64) *sdf.Scene {
 		case ' ':
 			// Skip spaces
 		case '#':
+			col := color.NewRainbowOklabToLinear((x + 0.5) * 0.5)
+			col.Mul(20.)
 			s.Objects = append(s.Objects, &signed_distance.Circle{
 				Center:   vector.Vec2{X: x, Y: y},
 				Radius:   0.007,
-				Material: primitives.NewEmissiveMaterial(3*5., 2*5., 1*5.),
+				Material: primitives.NewEmissiveMaterial(col.R, col.G, col.B),
 			})
 		case '\n':
 			x = -0.5
@@ -69,10 +73,12 @@ func NewSceneTitle(time float64) *sdf.Scene {
 		case ' ':
 			// Skip spaces
 		case '#':
+			col := color.NewRainbowOklabToLinear(1. - (x+0.5)/2.)
+			col.Mul(20.)
 			s.Objects = append(s.Objects, &signed_distance.Circle{
 				Center:   vector.Vec2{X: x, Y: y},
 				Radius:   0.007,
-				Material: primitives.NewEmissiveMaterial(1.5*5., 1.5*5., 6*5.),
+				Material: primitives.NewEmissiveMaterial(col.R, col.G, col.B),
 			})
 		case '\n':
 			x = -0.85
