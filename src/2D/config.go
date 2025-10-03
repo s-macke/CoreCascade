@@ -10,7 +10,7 @@ type flagConfig struct {
 	OutputFilename string
 	InputFilename  string
 	Scene          string
-	Time           float64
+	Time           float32
 	Method         string
 	Multipass      int
 }
@@ -21,7 +21,8 @@ func parseConfig() (config flagConfig) {
 	flag.StringVar(&config.OutputFilename, "output", "output", "Output filename for the rendered image")
 	flag.StringVar(&config.InputFilename, "input", "", "Input raw file")
 	flag.StringVar(&config.Scene, "scene", "shadows", "Scene to render (e.g., center, pinhole, penumbra, shadows, beam)")
-	flag.Float64Var(&config.Time, "time", 0.0, "Time of the scene")
+	time := 0.
+	flag.Float64Var(&time, "time", 0.0, "Time of the scene")
 	flag.IntVar(&config.Multipass, "pass", 0, "Multipass rendering (0 = off, 1 = on)")
 	flag.StringVar(&config.Method, "method", "vanilla_radiance_cascade", "Rendering method to use :\n"+
 		"  path_tracing\n"+
@@ -30,5 +31,6 @@ func parseConfig() (config flagConfig) {
 		"  bilinear_fix_radiance_cascade\n"+
 		"  light_propagation_volumes\n")
 	flag.Parse()
+	config.Time = float32(time)
 	return
 }

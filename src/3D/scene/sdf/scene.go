@@ -3,12 +3,12 @@ package sdf
 import (
 	"CoreCascade3D/primitives"
 	"color"
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
 type SdObject interface {
-	Distance(p vector.Vec3) float64
+	Distance(p vector.Vec3) float32
 	GetMaterial() *primitives.Material
 }
 
@@ -21,9 +21,9 @@ func (s *Scene) GetMaterial(p vector.Vec3) primitives.Material {
 	return m
 }
 
-func (s *Scene) SignedDistance(p vector.Vec3) (float64, primitives.Material) {
+func (s *Scene) SignedDistance(p vector.Vec3) (float32, primitives.Material) {
 	// Calculate the total signed distance to the objects
-	d := 1e99 // Initialize with a large distance
+	d := float32(math.MaxFloat32) // Initialize with a large distance
 	for _, obj := range s.Objects {
 		distance := obj.Distance(p)
 		if distance < 0 {
@@ -37,9 +37,9 @@ func (s *Scene) SignedDistance(p vector.Vec3) (float64, primitives.Material) {
 	return d, primitives.VoidMaterial
 }
 
-func (s *Scene) Trace(r vector.Ray3D, tmax float64) (visibility float64, c color.Color) {
-	t := 0.0
-	vis := 1.0
+func (s *Scene) Trace(r vector.Ray3D, tmax float32) (visibility float32, c color.Color) {
+	t := float32(0.0)
+	vis := float32(1.0)
 	const eps = 1e-4
 	const minStep = 0.01
 	stop := false
@@ -49,7 +49,7 @@ func (s *Scene) Trace(r vector.Ray3D, tmax float64) (visibility float64, c color
 
 		// Scene bounds
 		// TODO. The bounds must be larger for radiance cascades or aabb test
-		if p.X < -1.0 || p.X > 1.0 || p.Y < -1.0 || p.Y > 1.0 || p.Z < -1e-4 || p.Z > 0.10001 {
+		if p.X < -3.0 || p.X > 3.0 || p.Y < -3.0 || p.Y > 3.0 || p.Z < -3. || p.Z > 3.0 {
 			return vis, c
 		}
 

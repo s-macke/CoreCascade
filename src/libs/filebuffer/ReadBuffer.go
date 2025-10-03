@@ -109,3 +109,13 @@ func (rb *ReadBuffer) ReadFloat64() float64 {
 	value := math.Float64frombits(vint)
 	return value
 }
+
+func (rb *ReadBuffer) ReadFloat32() float32 {
+	if rb.offset+4 > len(rb.b) {
+		panic("ReadFloat32: not enough bytes in buffer")
+	}
+	buf := rb.ReadSlice(4)
+	vint := binary.LittleEndian.Uint32(buf[:4])
+	value := math.Float32frombits(vint)
+	return value
+}

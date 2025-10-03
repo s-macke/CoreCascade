@@ -1,13 +1,13 @@
 package grid
 
 import (
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
 type AABBHit struct {
 	Hit           bool
-	TEnter, TExit float64
+	TEnter, TExit float32
 }
 
 // IntersectRayAABB tests a ray against an axis-aligned box [min,max].

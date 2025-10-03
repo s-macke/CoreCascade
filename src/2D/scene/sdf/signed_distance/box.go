@@ -2,7 +2,7 @@ package signed_distance
 
 import (
 	"CoreCascade2D/primitives"
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
@@ -22,7 +22,7 @@ func (b *Box) GetMaterial() *primitives.Material {
 // sdBox calculates the signed distance from a point p to an axis-aligned box b.
 // It returns a negative value if the point is inside the box,
 // a positive value if it is outside, and 0 if it is on the boundary.
-func (b *Box) Distance(p vector.Vec2) float64 {
+func (b *Box) Distance(p vector.Vec2) float32 {
 	// 1. Translate the point so the box is centered at the origin
 	p.X -= b.Center.X
 	p.Y -= b.Center.Y

@@ -3,7 +3,7 @@ package grid
 import (
 	"CoreCascade3D/primitives"
 	"color"
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
@@ -37,9 +37,9 @@ func NewScene(width, height, depth int) *Scene {
 
 func (s *Scene) XYZToIndex(p vector.Vec3) (x, y, z int, outside bool) {
 	// from (-1, -1, 0) to (1, 1, 0.1)
-	x = int((p.X + 1.) / 2. * float64(s.Width))
-	y = int((p.Y + 1.) / 2. * float64(s.Height))
-	z = int(p.Z * 10. * float64(s.Depth))
+	x = int((p.X + 1.) / 2. * float32(s.Width))
+	y = int((p.Y + 1.) / 2. * float32(s.Height))
+	z = int(p.Z * 10. * float32(s.Depth))
 	outside = x < 0 || y < 0 || z < 0 || x >= s.Width || y >= s.Height || z >= s.Depth
 	return x, y, z, outside
 }
@@ -47,9 +47,9 @@ func (s *Scene) XYZToIndex(p vector.Vec3) (x, y, z int, outside bool) {
 // IndexToSceneUVW from (-1, -1, 0) to (1, 1, 0.1)
 func (s *Scene) IndexToXYZ(x, y, z int) vector.Vec3 {
 	return vector.Vec3{
-		X: (float64(x)/float64(s.Width))*2. - 1.,
-		Y: (float64(y)/float64(s.Height))*2. - 1.,
-		Z: float64(z) / float64(s.Depth) * 0.1,
+		X: (float32(x)/float32(s.Width))*2. - 1.,
+		Y: (float32(y)/float32(s.Height))*2. - 1.,
+		Z: float32(z) / float32(s.Depth) * 0.1,
 	}
 }
 
@@ -62,13 +62,13 @@ func (s *Scene) GetMaterial(p vector.Vec3) primitives.Material {
 	return *m // trilinear maybe?
 }
 
-func (s *Scene) Trace3D2(r vector.Ray3D, tmax float64) (vis float64, c color.Color) {
+func (s *Scene) Trace3D2(r vector.Ray3D, tmax float32) (vis float32, c color.Color) {
 	vis = 1.0
 	const eps = 1e-4
 	emission := color.Color{R: 1.0, G: 1.0, B: 1.0} // fake emission light at end
 
-	dx := 2. / float64(s.Width)
-	dz := 0.1 / float64(s.Depth)
+	dx := 2. / float32(s.Width)
+	dz := 0.1 / float32(s.Depth)
 	stepsize := vector.Vec3{
 		X: dx / math.Abs(r.Dir.X),
 		Y: dx / math.Abs(r.Dir.Y),
@@ -76,7 +76,7 @@ func (s *Scene) Trace3D2(r vector.Ray3D, tmax float64) (vis float64, c color.Col
 	}
 	dt := min(stepsize.X, stepsize.Y, stepsize.Z) * 0.2
 
-	for t := 0.0; t < tmax; t += dt {
+	for t := float32(0.0); t < tmax; t += dt {
 		p := r.Trace(t)
 		x, y, z, outside := s.XYZToIndex(p)
 		if outside {
@@ -117,13 +117,13 @@ func (s *Scene) Trace3D2(r vector.Ray3D, tmax float64) (vis float64, c color.Col
 	return vis, c
 }
 
-func (s *Scene) Trace(ray vector.Ray3D, tmax float64) (vis float64, c color.Color) {
+func (s *Scene) Trace(ray vector.Ray3D, tmax float32) (vis float32, c color.Color) {
 	vis = 1.0
 	const eps = 1e-4
 	emission := color.Color{R: 1.0, G: 1.0, B: 1.0} // fake emission light at end
 
-	dx := 2. / float64(s.Width)
-	dz := 0.1 / float64(s.Depth)
+	dx := 2. / float32(s.Width)
+	dz := 0.1 / float32(s.Depth)
 
 	sx := 0
 	if ray.Dir.X > 0 {
@@ -167,7 +167,7 @@ func (s *Scene) Trace(ray vector.Ray3D, tmax float64) (vis float64, c color.Colo
 	// Using gridMin as the world-space origin of cell (0,0,0).
 	cellMin := s.IndexToXYZ(ix, iy, iz)
 
-	var nextBoundaryX, nextBoundaryY, nextBoundaryZ float64
+	var nextBoundaryX, nextBoundaryY, nextBoundaryZ float32
 	if sx > 0 {
 		nextBoundaryX = cellMin.X + dx
 	} else if sx < 0 {
@@ -207,7 +207,7 @@ func (s *Scene) Trace(ray vector.Ray3D, tmax float64) (vis float64, c color.Colo
 	if tMaxZ < 0 && sz != 0 {
 		tMaxZ = 0
 	}
-	var tPrev float64
+	var tPrev float32
 
 	for {
 		// Decide which axis boundary we hit next

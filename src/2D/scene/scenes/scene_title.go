@@ -9,7 +9,7 @@ import (
 	"vector"
 )
 
-func NewSceneTitle(time float64) *sdf.Scene {
+func NewSceneTitle(time float32) *sdf.Scene {
 
 	title := []string{
 		`
@@ -38,9 +38,9 @@ func NewSceneTitle(time float64) *sdf.Scene {
 		&signed_distance.Box{Center: vector.Vec2{X: 0., Y: -0.5}, HalfSize: vector.Vec2{X: 0.3, Y: 0.02}, Material: primitives.NewAbsorbiveMaterial(20., 0., 0., 0.)},
 	}
 
-	l := 0.03
-	x := -0.5
-	y := -0.9 + 0.56
+	l := float32(0.03)
+	x := float32(-0.5)
+	y := float32(-0.9 + 0.56)
 	for _, c := range title[0] {
 		x += l
 

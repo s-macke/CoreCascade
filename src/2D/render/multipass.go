@@ -37,7 +37,7 @@ func ToSecondaryLight(sc scene.Scene, image *linear_image.SampledImage) *grid.Sc
 func AddDiffuse(sc scene.Scene, image *linear_image.SampledImage) {
 	for x := 0; x < image.Width; x++ {
 		for y := 0; y < image.Height; y++ {
-			uv := vector.Vec2{X: (float64(x)/float64(image.Width))*2 - 1, Y: (float64(y)/float64(image.Height))*2 - 1}
+			uv := vector.Vec2{X: (float32(x)/float32(image.Width))*2 - 1, Y: (float32(y)/float32(image.Height))*2 - 1}
 			mat := sc.GetMaterial(uv)
 			fluence := image.GetColor(x, y)
 			fluence.R += fluence.R * mat.Diffuse.R * 0.99

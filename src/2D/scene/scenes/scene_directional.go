@@ -5,11 +5,11 @@ import (
 	"CoreCascade2D/scene/sdf"
 	"CoreCascade2D/scene/sdf/signed_distance"
 	"color"
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
-func NewSceneDirectional(time float64) *sdf.Scene {
+func NewSceneDirectional(time float32) *sdf.Scene {
 	s := &sdf.Scene{}
 	/*
 		m := primitives.NewEmissiveMaterial(10, 10, 10)
@@ -21,7 +21,7 @@ func NewSceneDirectional(time float64) *sdf.Scene {
 		}
 	*/
 	for i := 0; i < 10; i++ {
-		angle := float64(i) * (2. * math.Pi) / 10.
+		angle := float32(i) * (2. * math.Pi) / 10.
 		lab := color.Oklab{
 			L: 1.,
 			A: 0.4 * math.Cos(angle),

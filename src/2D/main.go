@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func NewScene(sceneAsString string, time float64) scene.Scene {
+func NewScene(sceneAsString string, time float32) scene.Scene {
 	sceneAsString = strings.ToLower(sceneAsString)
 	var s scene.Scene = nil
 	switch sceneAsString {

@@ -7,7 +7,7 @@ import (
 	"vector"
 )
 
-func NewSceneAbsorption(time float64) *sdf.Scene {
+func NewSceneAbsorption(time float32) *sdf.Scene {
 	s := &sdf.Scene{}
 	s.Objects = []sdf.SdObject{
 		&signed_distance.Box{Center: vector.Vec2{X: 0., Y: -0.25}, HalfSize: vector.Vec2{X: 0.05, Y: 0.125}, Material: primitives.NewEmissiveMaterial(0., 0., 10.)},

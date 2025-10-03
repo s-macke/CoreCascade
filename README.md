@@ -106,23 +106,49 @@ Comparison between different rendering methods in the same scene:
 The Go application supports the following features:
 
 - **Multiple Rendering Methods**:
-  - Monte-Carlo Path tracing
-  - Radiance Cascades rendering (Vanilla and Bilinear Fix)
-  - Light Propagation
-- **SDF-based Scene Representation**: Uses Signed Distance Fields for flexible object representation
+  - Monte Carlo Path Tracing (sequential and parallel)
+  - Radiance Cascades rendering (Vanilla and Bilinear Fix variants)
+  - Light Propagation Volumes
+  - 3D Path Tracing (experimental)
+  - 3D Radiance Cascade (experimental)
+- **SDF-based Scene Representation**: Uses Signed Distance Fields for flexible 2D object representation
+- **Progressive Rendering**: Resume path tracing from saved .raw files
+- **Multiple Scenes**: Pre-configured scenes including shadows, penumbra, beam, fluid dynamics, and more
 
 ### Building
 
-Build directly:
 ```bash
-cd src && go build -o ../CoreCascade
+./build.sh
 ```
+
+This builds two binaries:
+- `CoreCascade2D` - Main 2D renderer
+- `CoreCascade3D` - Experimental 3D renderer
 
 ### Running
 
-To see available options:
+**2D Renderer:**
 ```bash
-./CoreCascade --help
+./CoreCascade2D -scene shadows -method vanilla_radiance_cascade
+```
+
+**3D Renderer:**
+```bash
+./CoreCascade3D -scene height -method path_tracing
+```
+
+**Common options:**
+- `-scene <name>` - Choose scene (2D: center, shadows, pinhole, penumbra, beam, title, fluid, absorption, directional)
+- `-method <name>` - Rendering method (see `-help` for full list)
+- `-output <name>` - Output filename (without extension, creates .png and .raw files)
+- `-width` / `-height` - Image dimensions (default: 800x800)
+- `-time <float>` - Time parameter for animated scenes
+- `-input <file>` - Resume progressive rendering from .raw file
+
+For all options:
+```bash
+./CoreCascade2D -help
+./CoreCascade3D -help
 ```
 
 ## References

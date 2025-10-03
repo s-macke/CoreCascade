@@ -1,17 +1,17 @@
 package color
 
 import (
+	math "github.com/chewxy/math32"
 	"image/color"
-	"math"
 )
 
 type Color struct {
-	R, G, B float64
+	R, G, B float32
 }
 
 var Black = Color{R: 0, G: 0, B: 0}
 
-func NewSRGBColor(r float64, g float64, b float64) (c Color) {
+func NewSRGBColor(r float32, g float32, b float32) (c Color) {
 	c = Color{r, g, b}
 	c.R = math.Pow(c.R, 2.2)
 	c.G = math.Pow(c.G, 2.2)
@@ -37,20 +37,20 @@ func (c *Color) Abs() {
 	c.B = math.Abs(c.B)
 }
 
-func (c *Color) Div(f float64) {
+func (c *Color) Div(f float32) {
 	invA := 1. / f
 	c.R *= invA
 	c.G *= invA
 	c.B *= invA
 }
 
-func (c *Color) Mul(f float64) {
+func (c *Color) Mul(f float32) {
 	c.R *= f
 	c.G *= f
 	c.B *= f
 }
 
-func clamp(value, min, max float64) float64 {
+func clamp(value, min, max float32) float32 {
 	if value < min {
 		return min
 	}
@@ -70,11 +70,11 @@ func (c *Color) ToRGBA() color.RGBA {
 }
 
 // Intensity calculates the magnitude (or "energy") of the color.
-func (c *Color) Intensity() float64 {
+func (c *Color) Intensity() float32 {
 	return math.Sqrt(c.R*c.R + c.G*c.G + c.B*c.B)
 }
 
-func linearToSRGB(x float64) float64 {
+func linearToSRGB(x float32) float32 {
 	if x <= 0.0031308 {
 		return 12.92 * x
 	}

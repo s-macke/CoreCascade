@@ -9,9 +9,9 @@ type Material struct {
 	Emissive          color.Color
 	DirectionEnabled  bool
 	EmissiveDirection vector.Vec2
-	EmissiveAngle     float64
+	EmissiveAngle     float32
 
-	Absorption float64
+	Absorption float32
 	Diffuse    color.Color // Diffuse color for SRGB materials,
 }
 
@@ -42,7 +42,7 @@ func (m *Material) Emission(t vector.Vec2) color.Color {
 	}
 }
 
-func NewEmissiveMaterial(r, g, b float64) Material {
+func NewEmissiveMaterial(r, g, b float32) Material {
 	return Material{
 		DirectionEnabled: false,
 		Emissive:         color.Color{r, g, b},
@@ -51,7 +51,7 @@ func NewEmissiveMaterial(r, g, b float64) Material {
 	}
 }
 
-func NewEmissiveSRGBMaterial(r, g, b float64) Material {
+func NewEmissiveSRGBMaterial(r, g, b float32) Material {
 	return Material{
 		DirectionEnabled: false,
 		Emissive:         color.NewSRGBColor(r, g, b),
@@ -69,7 +69,7 @@ func NewBlackMaterial() Material {
 	}
 }
 
-func NewAbsorbiveMaterial(value float64, r, g, b float64) Material {
+func NewAbsorbiveMaterial(value float32, r, g, b float32) Material {
 	return Material{
 		DirectionEnabled: false,
 		Emissive:         color.Black,

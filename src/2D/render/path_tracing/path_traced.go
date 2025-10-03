@@ -4,8 +4,8 @@ import (
 	"CoreCascade2D/scene"
 	"color"
 	"fmt"
+	math "github.com/chewxy/math32"
 	"linear_image"
-	"math"
 	"math/rand/v2"
 	"vector"
 )
@@ -13,7 +13,7 @@ import (
 func RenderPixel(s scene.Scene, uv vector.Vec2, samples int) color.Color {
 	col := color.Black
 	for i := 0; i <= samples; i++ {
-		angle := rand.Float64() * 2. * math.Pi
+		angle := rand.Float32() * 2. * math.Pi
 		dir := vector.NewVec2fromAngle(angle)
 		ray := vector.Ray2D{P: uv, Dir: dir}
 		_, c := s.Trace(ray, 4.0)
@@ -30,7 +30,7 @@ func RenderPathTracing(scene scene.Scene, s *linear_image.SampledImage) {
 		fmt.Println(y, "/", s.Height)
 		for x := 0; x < s.Width; x++ {
 			// Convert pixel coordinates to scene coordinates
-			uv := vector.Vec2{X: (float64(x)/float64(s.Width))*2 - 1, Y: (float64(y)/float64(s.Height))*2 - 1}
+			uv := vector.Vec2{X: (float32(x)/float32(s.Width))*2 - 1, Y: (float32(y)/float32(s.Height))*2 - 1}
 			col := RenderPixel(scene, uv, SAMPLES)
 			s.AddColorSamples(x, y, col, SAMPLES)
 		}

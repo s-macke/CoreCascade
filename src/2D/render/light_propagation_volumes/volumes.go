@@ -4,13 +4,13 @@ import (
 	"CoreCascade2D/primitives"
 	"CoreCascade2D/scene"
 	"color"
+	math "github.com/chewxy/math32"
 	"linear_image"
-	"math"
 	"vector"
 )
 
 type CircularHarmonics struct {
-	b0, b1, b2 float64 // b0 = constant term, b1 = cos(theta), b2 = sin(theta)
+	b0, b1, b2 float32 // b0 = constant term, b1 = cos(theta), b2 = sin(theta)
 }
 
 type Cell struct {
@@ -40,14 +40,14 @@ func ToGrid(scene scene.Scene, image *linear_image.SampledImage) [][]Cell {
 		grid[i] = make([]Cell, image.Width)
 		for j := range grid[i] {
 			grid[i][j] = Cell{m: scene.GetMaterial(vector.Vec2{
-				X: (float64(j)/float64(image.Width))*2 - 1,
-				Y: (float64(i)/float64(image.Height))*2 - 1})}
+				X: (float32(j)/float32(image.Width))*2 - 1,
+				Y: (float32(i)/float32(image.Height))*2 - 1})}
 		}
 	}
 	return grid
 }
 
-func PropagateFrom(n vector.Vec2, sa float64, src *Cell, dest *Cell) {
+func PropagateFrom(n vector.Vec2, sa float32, src *Cell, dest *Cell) {
 	absorption := math.Exp(-src.m.Absorption*2./800.*0.5) * math.Exp(-dest.m.Absorption*2./800.*0.5)
 	dV0 := math.Sqrt(1. / (2. * math.Pi))
 	dV1 := n.X * math.Sqrt(2./(2.*math.Pi)) // projected solid angle in the x direction
@@ -78,7 +78,7 @@ func Propagate(grid [][]Cell, grid2 [][]Cell, width, height int) {
 	dn1 := vector.Vec2{X: 0.8944271909999159, Y: 0.4472135954999579}  // normal to the center of the top side of our pixel
 	dn0 := vector.Vec2{X: 0.8944271909999159, Y: -0.4472135954999579} // normal to the center of the bottom side of our pixel
 
-	cellWidth := 2. / float64(width) // assuming the scene is from -1 to 1 in both x and y
+	cellWidth := 2. / float32(width) // assuming the scene is from -1 to 1 in both x and y
 	var src *Cell
 	for j := 1; j < height-1; j++ {
 		for i := 1; i < width-1; i++ {
@@ -134,7 +134,7 @@ func LightPropagationVolume(scene scene.Scene, image *linear_image.SampledImage)
 	grid2 := ToGrid(scene, image)
 
 	//iterations := max(image.Width, image.Height) * 2.82 // light has the chance to bounce from one side to the other and back
-	iterations := int(float64(max(image.Width, image.Height)) * 2.) // light has the chance to bounce from one side to the other
+	iterations := int(float32(max(image.Width, image.Height)) * 2.) // light has the chance to bounce from one side to the other
 
 	for it := 0; it < iterations; it++ {
 		Propagate(grid, grid2, image.Width, image.Height)

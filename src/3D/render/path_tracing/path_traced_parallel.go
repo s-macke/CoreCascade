@@ -3,13 +3,13 @@ package path_tracing
 import (
 	"CoreCascade3D/scene"
 	"color"
+	math "github.com/chewxy/math32"
 	"linear_image"
-	"math"
 	"sync"
 	"vector"
 )
 
-type PathTracingParallel3D struct {
+type PathTracingParallel struct {
 	Width  int
 	Height int
 	Depth  int
@@ -18,13 +18,13 @@ type PathTracingParallel3D struct {
 	layers []*linear_image.SampledImage
 }
 
-func NewPathTracing3D(s scene.Scene, image *linear_image.SampledImage) *PathTracingParallel3D {
+func NewPathTracing(s scene.Scene, image *linear_image.SampledImage) *PathTracingParallel {
 	depth := 40
 	var layers []*linear_image.SampledImage
 	for layer := 0; layer < depth; layer++ {
 		layers = append(layers, linear_image.NewSampledImage(image.Width, image.Height))
 	}
-	return &PathTracingParallel3D{
+	return &PathTracingParallel{
 		Width:  image.Width,
 		Height: image.Height,
 		Depth:  depth,
@@ -35,15 +35,15 @@ func NewPathTracing3D(s scene.Scene, image *linear_image.SampledImage) *PathTrac
 }
 
 // IndexToSceneUVW from (-1, -1, 0) to (1, 1, 0.1)
-func (pt *PathTracingParallel3D) IndexToSceneUVW(x, y, z int) vector.Vec3 {
+func (pt *PathTracingParallel) IndexToSceneUVW(x, y, z int) vector.Vec3 {
 	return vector.Vec3{
-		X: (float64(x)/float64(pt.Width))*2. - 1.,
-		Y: (float64(y)/float64(pt.Height))*2. - 1.,
-		Z: float64(z) / float64(pt.Depth) * 0.1,
+		X: (float32(x)/float32(pt.Width))*2. - 1.,
+		Y: (float32(y)/float32(pt.Height))*2. - 1.,
+		Z: float32(z) / float32(pt.Depth) * 0.1,
 	}
 }
 
-func (pt *PathTracingParallel3D) RenderPixel(uvw vector.Vec3, samples int) color.Color {
+func (pt *PathTracingParallel) RenderPixel(uvw vector.Vec3, samples int) color.Color {
 	col := color.Black
 	for i := 0; i <= samples; i++ {
 		//dir := primitives.NewRandomUnitVec3()
@@ -57,7 +57,7 @@ func (pt *PathTracingParallel3D) RenderPixel(uvw vector.Vec3, samples int) color
 	return col
 }
 
-func (pt *PathTracingParallel3D) RenderPathTracingIteration(samples int) {
+func (pt *PathTracingParallel) RenderPathTracingIteration(samples int) {
 	var wg sync.WaitGroup
 	for z := 0; z < pt.Depth; z++ {
 		for y := 0; y < pt.Height; y++ {
@@ -76,12 +76,12 @@ func (pt *PathTracingParallel3D) RenderPathTracingIteration(samples int) {
 	wg.Wait()
 }
 
-func (pt *PathTracingParallel3D) MergeLayers() {
+func (pt *PathTracingParallel) MergeLayers() {
 	pt.image.Clear()
-	dz := 0.1 / float64(pt.Depth)
+	dz := 0.1 / float32(pt.Depth)
 	for y := 0; y < pt.Height; y++ {
 		for x := 0; x < pt.Width; x++ {
-			visibility := 1.0
+			visibility := float32(1.0)
 			color := color.Black
 			for z := pt.Depth - 1; z >= 0; z-- {
 				uvw := pt.IndexToSceneUVW(x, y, z)
@@ -97,7 +97,7 @@ func (pt *PathTracingParallel3D) MergeLayers() {
 	}
 }
 
-func (pt *PathTracingParallel3D) Render(maxIterations int) {
+func (pt *PathTracingParallel) Render(maxIterations int) {
 	const SAMPLES = 1
 	//for i := 1; i <= maxIterations; i++ {
 	//fmt.Printf("Iteration %d / %d\n", i, maxIterations)

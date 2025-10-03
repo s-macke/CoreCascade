@@ -83,7 +83,7 @@ func (rc *RadianceCascade) MergeOnImage() {
 			for k := 0; k < cascade0.info.DirCount; k++ {
 				merged.Add(cascade0.radiance[x][y][k].color)
 			}
-			merged.Div(float64(cascade0.info.DirCount)) // average the colors
+			merged.Div(float32(cascade0.info.DirCount)) // average the colors
 			rc.s.SetColor(x, y, merged)
 		}
 	}
@@ -91,7 +91,6 @@ func (rc *RadianceCascade) MergeOnImage() {
 
 func (rc *RadianceCascade) Radiance(probe CascadeProbe) CascadeRadianceResult {
 	visibility, color := rc.scene.Trace(probe.Ray, probe.Tmax)
-
 	return CascadeRadianceResult{
 		color:      color,
 		visibility: visibility,
@@ -102,9 +101,9 @@ func (rc *RadianceCascade) CascadeMerge(cNear *Cascade, cFar *Cascade, x int, y 
 	ciNear := cNear.info
 	ciFar := cFar.info
 
-	factor := float64(ciNear.DirCount) / float64(ciFar.DirCount) // integration factor
+	factor := float32(ciNear.DirCount) / float32(ciFar.DirCount) // integration factor
 	nDirMerge := ciFar.DirCount / ciNear.DirCount                // number of directions to merge
-	bilinearWeights := vector.Vec2{X: 0.25 + 0.5*float64(x&1), Y: 0.25 + 0.5*float64(y&1)}
+	bilinearWeights := vector.Vec2{X: 0.25 + 0.5*float32(x&1), Y: 0.25 + 0.5*float32(y&1)}
 	cNear.radiance[x][y][k] = rc.Radiance(ciNear.GetProbe(x, y, k))
 	if !ciFar.isLast { // is not last cascade then merging needed
 		merged := NewCascadeRadianceResult()

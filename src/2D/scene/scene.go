@@ -8,5 +8,5 @@ import (
 
 type Scene interface {
 	GetMaterial(p vector.Vec2) primitives.Material
-	Trace(r vector.Ray2D, tmax float64) (visibility float64, c color.Color)
+	Trace(r vector.Ray2D, tmax float32) (visibility float32, c color.Color)
 }

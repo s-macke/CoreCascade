@@ -17,11 +17,11 @@ func NewScenePinhole() *sdf.Scene {
 	}
 
 	for i := -10; i <= 10; i++ {
-		c := color.NewRainbowOklabToLinear((float64(i) + 10) / 20.)
+		c := color.NewRainbowOklabToLinear((float32(i) + 10) / 20.)
 		c.Mul(3.)
 		s.Objects = append(s.Objects,
 			&signed_distance.Box{
-				Center:   vector.Vec2{X: -0.9, Y: -float64(i) * 0.1},
+				Center:   vector.Vec2{X: -0.9, Y: -float32(i) * 0.1},
 				HalfSize: vector.Vec2{X: 0.02, Y: 0.05},
 				Material: primitives.NewEmissiveMaterial(c.R, c.G, c.B),
 			})

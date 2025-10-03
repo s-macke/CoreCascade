@@ -48,9 +48,9 @@ func NewSampledImageFromFile(filename string) *SampledImage {
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
 			sp := &s.pixels[y][x]
-			sp.Color.R = rb.ReadFloat64()
-			sp.Color.G = rb.ReadFloat64()
-			sp.Color.B = rb.ReadFloat64()
+			sp.Color.R = rb.ReadFloat32()
+			sp.Color.G = rb.ReadFloat32()
+			sp.Color.B = rb.ReadFloat32()
 			sp.Samples = rb.ReadInt(4)
 		}
 	}
@@ -79,7 +79,7 @@ func NewSampledImageFromJpeg(filename string) *SampledImage {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			c := img.At(x, y)
 			r, g, b, _ := c.RGBA()
-			col := color.NewSRGBColor(float64(r)/65535.0, float64(g)/65535.0, float64(b)/65535.0)
+			col := color.NewSRGBColor(float32(r)/65535.0, float32(g)/65535.0, float32(b)/65535.0)
 			s.SetColor(x-bounds.Min.X, y-bounds.Min.Y, col)
 		}
 	}
@@ -98,7 +98,7 @@ func (s *SampledImage) AddAmbient(c color.Color) {
 	}
 }
 
-func (s *SampledImage) Mul(f float64) {
+func (s *SampledImage) Mul(f float32) {
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
 			col1 := s.GetColor(x, y)
@@ -152,7 +152,7 @@ func (s *SampledImage) GetColor(x, y int) color.Color {
 	if p.Samples == 0 {
 		return color.Black
 	}
-	c.Div(float64(p.Samples))
+	c.Div(float32(p.Samples))
 	return c
 }
 
@@ -162,7 +162,7 @@ func (s *SampledImage) ToImage() *image.RGBA {
 		for x := 0; x < s.Width; x++ {
 			p := s.pixels[y][x]
 			c := p.Color
-			c.Div(float64(p.Samples))
+			c.Div(float32(p.Samples))
 			img.Set(x, y, c.ToSRGBAReinhard())
 			//img.Set(x, y, c.ToSRGBAOnlyGamma())
 		}
@@ -170,13 +170,13 @@ func (s *SampledImage) ToImage() *image.RGBA {
 	return img
 }
 
-func (s *SampledImage) Energy() float64 {
-	energy := 0.
+func (s *SampledImage) Energy() float32 {
+	energy := float32(0.)
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
 			p := s.pixels[y][x]
 			c := p.Color
-			c.Div(float64(p.Samples))
+			c.Div(float32(p.Samples))
 			energy += c.Intensity()
 		}
 	}
@@ -225,9 +225,9 @@ func (s *SampledImage) StoreRaw(filename string) {
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
 			sp := s.pixels[y][x]
-			wb.WriteFloat64(sp.Color.R)
-			wb.WriteFloat64(sp.Color.G)
-			wb.WriteFloat64(sp.Color.B)
+			wb.WriteFloat32(sp.Color.R)
+			wb.WriteFloat32(sp.Color.G)
+			wb.WriteFloat32(sp.Color.B)
 			wb.WriteInt32(int32(sp.Samples))
 		}
 	}
@@ -243,7 +243,7 @@ func (s *SampledImage) Store(filename string) {
 func (s *SampledImage) Error(img *SampledImage) {
 	fmt.Println("Energy of s:", s.Energy())
 	fmt.Println("Energy of img:", img.Energy())
-	e := 0.0
+	e := float32(0.)
 	for y := 0; y < s.Height; y++ {
 		for x := 0; x < s.Width; x++ {
 			r := (s.Width-img.Width/2)*(s.Width-img.Width/2) + (s.Height-img.Height/2)*(s.Height-img.Height/2)
@@ -259,7 +259,7 @@ func (s *SampledImage) Error(img *SampledImage) {
 			s.SetColor(x, y, c)
 		}
 	}
-	fmt.Println("Error:", e/float64(s.Width*s.Height))
+	fmt.Println("Error:", e/float32(s.Width*s.Height))
 }
 
 func (s *SampledImage) Blend(src *SampledImage) {

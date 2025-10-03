@@ -1,19 +1,19 @@
 package vector
 
 import (
-	"math"
+	math "github.com/chewxy/math32"
 	"math/rand/v2"
 )
 
 type Vec3 struct {
-	X, Y, Z float64
+	X, Y, Z float32
 }
 
 // RandomUnitVec3 returns a random unit vector uniformly distributed on the sphere
 func NewRandomUnitVec3() Vec3 {
 	// Generate random angle (azimuthal) and z-value
-	z := rand.Float64()*2 - 1 // uniform in [-1,1]
-	theta := rand.Float64() * 2 * math.Pi
+	z := rand.Float32()*2 - 1 // uniform in [-1,1]
+	theta := rand.Float32() * 2 * math.Pi
 
 	r := math.Sqrt(1 - z*z)
 	x := r * math.Cos(theta)
@@ -29,11 +29,11 @@ func (v *Vec3) ToVec2() Vec2 {
 	}
 }
 
-func (v *Vec3) Length() float64 {
+func (v *Vec3) Length() float32 {
 	return math.Sqrt(v.X*v.X + v.Y*v.Y + v.Z*v.Z)
 }
 
-func (v *Vec3) Normalize() float64 {
+func (v *Vec3) Normalize() float32 {
 	l := v.Length()
 	v.X /= l
 	v.Y /= l
@@ -59,7 +59,7 @@ type Ray3D struct {
 	Dir Vec3
 }
 
-func (r *Ray3D) Trace(t float64) Vec3 {
+func (r *Ray3D) Trace(t float32) Vec3 {
 	// Move the ray's point along its direction vector by distance d
 	return Vec3{
 		X: r.P.X + r.Dir.X*t,

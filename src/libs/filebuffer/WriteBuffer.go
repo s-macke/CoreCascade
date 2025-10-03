@@ -51,6 +51,12 @@ func (wb *WriteBuffer) WriteFloat64(v float64) {
 	wb.WriteSlice(buf[:])
 }
 
+func (wb *WriteBuffer) WriteFloat32(v float32) {
+	var buf [4]byte
+	binary.LittleEndian.PutUint32(buf[:], math.Float32bits(v))
+	wb.WriteSlice(buf[:])
+}
+
 func (wb *WriteBuffer) WriteZeroes(sLen int) {
 	wb.b = append(wb.b, make([]byte, sLen)...)
 }

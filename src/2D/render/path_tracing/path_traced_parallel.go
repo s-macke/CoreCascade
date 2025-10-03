@@ -19,7 +19,7 @@ func RenderPathTracingIteration(scene scene.Scene, s *linear_image.SampledImage,
 			go func(x, y int) {
 				defer wg.Done()
 				// Convert pixel coordinates to scene coordinates
-				uv := vector.Vec2{X: (float64(x)/float64(s.Width))*2 - 1, Y: (float64(y)/float64(s.Height))*2 - 1}
+				uv := vector.Vec2{X: (float32(x)/float32(s.Width))*2 - 1, Y: (float32(y)/float32(s.Height))*2 - 1}
 				col := RenderPixel(scene, uv, samples)
 				s.AddColorSamples(x, y, col, samples)
 			}(x, y)

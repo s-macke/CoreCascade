@@ -6,7 +6,7 @@ import (
 
 type Material struct {
 	Emissive   color.Color
-	Absorption float64
+	Absorption float32
 	Diffuse    color.Color // Diffuse color for SRGB materials,
 }
 
@@ -22,7 +22,7 @@ var VoidMaterial = Material{
 	Absorption: 0,
 }
 
-func NewEmissiveMaterial(r, g, b float64) Material {
+func NewEmissiveMaterial(r, g, b float32) Material {
 	return Material{
 		Emissive:   color.Color{R: r, G: g, B: b},
 		Absorption: 0,
@@ -30,7 +30,7 @@ func NewEmissiveMaterial(r, g, b float64) Material {
 	}
 }
 
-func NewEmissiveSRGBMaterial(r, g, b float64) Material {
+func NewEmissiveSRGBMaterial(r, g, b float32) Material {
 	return Material{
 		Emissive:   color.NewSRGBColor(r, g, b),
 		Diffuse:    color.Black,
@@ -46,7 +46,7 @@ func NewBlackMaterial() Material {
 	}
 }
 
-func NewAbsorbiveMaterial(value float64, r, g, b float64) Material {
+func NewAbsorbiveMaterial(value float32, r, g, b float32) Material {
 	return Material{
 		Emissive:   color.Black,
 		Absorption: value,

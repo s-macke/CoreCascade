@@ -5,12 +5,12 @@ import (
 	"CoreCascade2D/scene/grid"
 	"color"
 	"fmt"
+	math "github.com/chewxy/math32"
 	"image"
-	"math"
 	"os"
 )
 
-func NewSceneFluid(time float64, idx int) *grid.Scene {
+func NewSceneFluid(time float32, idx int) *grid.Scene {
 
 	infile, err := os.Open(fmt.Sprintf("src/scene/scenes/images/img%05d.png", int(time)))
 	//infile, err := os.Open(fmt.Sprintf("src/scene/scenes/images/dam%05d.png", int(time)))
@@ -31,32 +31,32 @@ func NewSceneFluid(time float64, idx int) *grid.Scene {
 			s.M[y][x].Material = primitives.VoidMaterial
 
 			r, g, _, _ := img.At(x, y).RGBA()
-			densityA := float64(r)
-			densityB := float64(g)
+			densityA := float32(r)
+			densityB := float32(g)
 
-			//densityA := float64(r) / float64(idx)
-			//densityB := float64(g) / float64(idx)
-			//densityA := max(float64(r)-float64(idx)*5000, 0.)
-			//densityB := max(float64(g)-float64(idx)*5000, 0.)
+			//densityA := float32(r) / float32(idx)
+			//densityB := float32(g) / float32(idx)
+			//densityA := max(float32(r)-float32(idx)*5000, 0.)
+			//densityB := max(float32(g)-float32(idx)*5000, 0.)
 
 			/*
 				densityA = min(densityA/8., 1000.)
 				densityB = min(densityB/8., 1000.)
 			*/
 			/*
-				if densityA >= float64(idx)*10000. && densityA < float64(idx+1)*10000. {
-					densityA = densityA - float64(idx)*10000.
+				if densityA >= float32(idx)*10000. && densityA < float32(idx+1)*10000. {
+					densityA = densityA - float32(idx)*10000.
 				} else {
 					densityA = 0.
 				}
-				if densityB >= float64(idx)*10000. && densityB < float64(idx+1)*10000. {
-					densityB = densityB - float64(idx)*10000.
+				if densityB >= float32(idx)*10000. && densityB < float32(idx+1)*10000. {
+					densityB = densityB - float32(idx)*10000.
 				} else {
 					densityB = 0.
 				}
 			*/
-			//densityA = max(densityA-float64(idx)*2000., 0.)
-			//densityB = max(densityB-float64(idx)*2000., 0.)
+			//densityA = max(densityA-float32(idx)*2000., 0.)
+			//densityB = max(densityB-float32(idx)*2000., 0.)
 
 			// x*x + y*y + z*z = r*r
 			// radius + z*z = r*r
@@ -64,10 +64,10 @@ func NewSceneFluid(time float64, idx int) *grid.Scene {
 				radius := (x-64)*(x-64) + (y-64)*(y-64)
 				//if radius < 30*30 {
 				//radius = radius / (30. * 30)
-				//absorption := max(1.-float64(radius), 0.)
-				absorption := math.Sqrt(max(30.*30.-float64(radius), 0.)) / 30.
-				//absorption = max(absorption-float64(idx)*0.3, 0.)
-				absorption = max(absorption/float64(idx*2), 0.)
+				//absorption := max(1.-float32(radius), 0.)
+				absorption := math.Sqrt(max(30.*30.-float32(radius), 0.)) / 30.
+				//absorption = max(absorption-float32(idx)*0.3, 0.)
+				absorption = max(absorption/float32(idx*2), 0.)
 				s.M[y][x].Material.Absorption = absorption * 5. * 5.
 				s.M[y][x].Material.Diffuse.R = 2. * absorption * 5.
 				//}
@@ -109,10 +109,10 @@ func NewSceneFluid(time float64, idx int) *grid.Scene {
 			*/
 			/*
 				s.M[y][x].Material.Absorption = (densityA + densityB) / 500.
-				s.M[y][x].Material.Emissive.R += 0.0002 * float64(densityA)
-				s.M[y][x].Material.Emissive.G += 0.0002 * float64(densityA)
-				s.M[y][x].Material.Emissive.B += 0.0002 * float64(densityA)
-				//s.M[y][x].Material.Emissive.G += 0.0001 * float64(densityB)
+				s.M[y][x].Material.Emissive.R += 0.0002 * float32(densityA)
+				s.M[y][x].Material.Emissive.G += 0.0002 * float32(densityA)
+				s.M[y][x].Material.Emissive.B += 0.0002 * float32(densityA)
+				//s.M[y][x].Material.Emissive.G += 0.0001 * float32(densityB)
 			*/
 			/*
 				s.M[y][x].Material.Absorption = 3.

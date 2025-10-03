@@ -1,12 +1,12 @@
 package color
 
-import "math"
+import math "github.com/chewxy/math32"
 
 type Oklab struct {
-	L, A, B float64
+	L, A, B float32
 }
 
-func NewRainbowOklabToLinear(t float64) Color {
+func NewRainbowOklabToLinear(t float32) Color {
 	// t in [0, 1]
 	angle := t * 2. * math.Pi
 	lab := Oklab{

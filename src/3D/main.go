@@ -2,6 +2,7 @@ package main
 
 import (
 	"CoreCascade3D/render/path_tracing"
+	"CoreCascade3D/render/radiance_cascade"
 	"CoreCascade3D/scene"
 	"CoreCascade3D/scene/scenes"
 	"fmt"
@@ -9,7 +10,7 @@ import (
 	"strings"
 )
 
-func NewScene(sceneAsString string, time float64) scene.Scene {
+func NewScene(sceneAsString string, time float32) scene.Scene {
 	sceneAsString = strings.ToLower(sceneAsString)
 	var s scene.Scene = nil
 	switch sceneAsString {
@@ -34,8 +35,12 @@ func main() {
 
 	switch config.Method {
 	case "path_tracing":
-		path_tracing.NewPathTracing3D(sc, image).Render(1000)
-	case "error":
+		path_tracing.NewPathTracing(sc, image).Render(1000)
+	case "radiance_cascade":
+		radiance_cascade.NewRadianceCascade(sc, image).Render()
+	case "plot":
+		PlotAngleDistribution()
+		return
 	default:
 		panic("Unknown method")
 	}

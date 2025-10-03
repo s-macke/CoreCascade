@@ -11,8 +11,8 @@ import (
 
 func PlotSignedDistance() {
 	scene := scenes.NewSceneShadows(0)
-	for x := -2.0; x <= 2.0; x += 0.1 {
-		for y := -2.0; y <= 2.0; y += 0.1 {
+	for x := float32(-2.0); x <= 2.0; x += 0.1 {
+		for y := float32(-2.0); y <= 2.0; y += 0.1 {
 			d, _ := scene.SignedDistance(vector.Vec2{X: x, Y: y})
 			fmt.Println(x, y, d)
 		}

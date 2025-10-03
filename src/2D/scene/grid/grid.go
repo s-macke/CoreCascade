@@ -4,7 +4,7 @@ import (
 	"CoreCascade2D/primitives"
 	"CoreCascade2D/scene/sdf"
 	"color"
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
@@ -12,7 +12,7 @@ import (
 
 type Voxel struct {
 	Material primitives.Material
-	distance float64
+	distance float32
 }
 
 type Scene struct {
@@ -40,7 +40,7 @@ func NewSceneFromSDF(width, height int, sdf *sdf.Scene) *Scene {
 	s := NewScene(width, height)
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			uv := vector.Vec2{X: (float64(x)/float64(width))*2 - 1, Y: (float64(y)/float64(height))*2 - 1}
+			uv := vector.Vec2{X: (float32(x)/float32(width))*2 - 1, Y: (float32(y)/float32(height))*2 - 1}
 			d, m := sdf.SignedDistance(uv)
 			s.M[y][x].Material = m
 			s.M[y][x].distance = d
@@ -61,15 +61,15 @@ func (s *Scene) IsBlack() bool {
 }
 
 func (s *Scene) GetMaterial(p vector.Vec2) primitives.Material {
-	x := (p.X + 1.) / 2.0 * float64(s.Width)
-	y := (p.Y + 1.) / 2.0 * float64(s.Height)
+	x := (p.X + 1.) / 2.0 * float32(s.Width)
+	y := (p.Y + 1.) / 2.0 * float32(s.Height)
 	if int(x) < 0 || int(y) < 0 || int(x) >= s.Width || int(y) >= s.Height {
 		return primitives.VoidMaterial
 	}
 	return s.M[int(y)][int(x)].Material // bilinear maybe?
 }
 
-func (s *Scene) Trace(r vector.Ray2D, tmax float64) (vis float64, c color.Color) {
+func (s *Scene) Trace(r vector.Ray2D, tmax float32) (vis float32, c color.Color) {
 	vis = 1.0
 	const eps = 1e-4
 
@@ -82,12 +82,12 @@ func (s *Scene) Trace(r vector.Ray2D, tmax float64) (vis float64, c color.Color)
 	tmin := max(0.0, hit.TEnter)
 	tmax = min(tmax, hit.TExit)
 
-	dt := 2. / float64(s.Width)
+	dt := 2. / float32(s.Width)
 	for t := tmin; t < tmax; t += dt {
 		p := r.Trace(t)
 
-		x := (p.X + 1.) / 2.0 * float64(s.Width)
-		y := (p.Y + 1.) / 2.0 * float64(s.Height)
+		x := (p.X + 1.) / 2.0 * float32(s.Width)
+		y := (p.Y + 1.) / 2.0 * float32(s.Height)
 		if int(x) < 0 || int(y) < 0 || int(x) >= s.Width || int(y) >= s.Height {
 			continue
 			// return vis, c

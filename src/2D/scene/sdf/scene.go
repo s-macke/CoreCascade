@@ -3,12 +3,12 @@ package sdf
 import (
 	"CoreCascade2D/primitives"
 	"color"
-	"math"
+	math "github.com/chewxy/math32"
 	"vector"
 )
 
 type SdObject interface {
-	Distance(p vector.Vec2) float64
+	Distance(p vector.Vec2) float32
 	GetMaterial() *primitives.Material
 }
 
@@ -27,12 +27,12 @@ func (s *Scene) GetMaterial(p vector.Vec2) primitives.Material {
 	return m
 }
 
-func (s *Scene) SignedDistance(p vector.Vec2) (float64, primitives.Material) {
+func (s *Scene) SignedDistance(p vector.Vec2) (float32, primitives.Material) {
 	// Calculate the total signed distance to the objects
 	m := primitives.VoidMaterial
 	negative := false
 
-	d := 1e99 // Initialize with a large distance
+	d := float32(math.MaxFloat32) // Initialize with a large distance
 	for _, obj := range s.Objects {
 		distance := obj.Distance(p)
 		if distance < 0 {
@@ -52,9 +52,9 @@ func (s *Scene) SignedDistance(p vector.Vec2) (float64, primitives.Material) {
 	return d, m
 }
 
-func (s *Scene) Trace(r vector.Ray2D, tmax float64) (visibility float64, c color.Color) {
-	t := 0.0
-	vis := 1.0
+func (s *Scene) Trace(r vector.Ray2D, tmax float32) (visibility float32, c color.Color) {
+	t := float32(0.)
+	vis := float32(1.0)
 	c = color.Black
 	const eps = 1e-4
 	const minStep = 0.01
